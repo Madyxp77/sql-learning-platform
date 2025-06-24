@@ -1,0 +1,31 @@
+product_id,product_name,category,price,stock_quantity
+1,Laptop Pro,Electronics,1200.00,50
+2,Mechanical Keyboard,Electronics,80.00,150
+3,Wireless Mouse,Electronics,25.00,200
+4,Office Chair Deluxe,Furniture,250.00,30
+5,Standing Desk,Furniture,400.00,20
+6,Desk Lamp LED,Home Decor,35.00,100
+7,Coffee Maker Pro,Appliances,150.00,70
+8,Smart Speaker X,Electronics,99.99,120
+9,Bluetooth Headphones,Electronics,75.00,180
+10,Ergonomic Monitor,Electronics,300.00,40
+11,Bookshelf Modern,Furniture,120.00,60
+12,Area Rug Large,Home Decor,90.00,50
+13,Air Fryer XXL,Appliances,100.00,90
+14,Gaming Headset,Electronics,60.00,110
+15,USB-C Hub,Electronics,30.00,250
+16,Sofa Sectional,Furniture,800.00,15
+17,Wall Art Abstract,Home Decor,55.00,80
+18,Blender High-Speed,Appliances,70.00,100
+19,Webcam HD,Electronics,45.00,130
+20,External SSD 1TB,Electronics,110.00,90
+21,Dining Table Set,Furniture,500.00,25
+22,Vacuum Cleaner Robot,Appliances,350.00,35
+23,Smartwatch Z,Electronics,200.00,75
+24,Portable Projector,Electronics,180.00,45
+25,Queen Size Bed,Furniture,650.00,10
+26,Table Lamp Minimalist,Home Decor,40.00,95
+27,Espresso Machine,Appliances,400.00,20
+28,Security Camera,Electronics,70.00,85
+29,Fitness Tracker,Electronics,50.00,160
+30,Cookware Set,Appliances,130.00,50

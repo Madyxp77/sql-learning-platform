@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 9: CASE Statements and Data Type Conversions - The SQL Path</title>
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+    <!-- Main stylesheet for general layout and responsiveness -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Theme stylesheet for dark/light mode variables and transitions -->
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - Inter for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Chapter-specific styles for better content presentation (replicated from previous chapters for consistency) */
+        .chapter-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .breadcrumbs {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--nav-link-color);
+        }
+
+        .breadcrumbs a {
+            color: var(--nav-link-color);
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .chapter-title {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-intro {
+            font-size: 1.15rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            max-width: 850px;
+            line-height: 1.7;
+        }
+
+        .chapter-section {
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+        }
+
+        .chapter-section h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .chapter-section h3 {
+            font-size: 1.6rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-section p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .code-block-container {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            background-color: var(--code-bg-color);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--code-border-color);
+            overflow: hidden;
+        }
+
+        .code-editor {
+            height: 200px; /* Default height for the Monaco editor */
+            width: 100%;
+            border-bottom: 1px solid var(--code-border-color);
+        }
+
+        .editor-actions {
+            padding: 0.8rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .query-results {
+            background-color: var(--content-bg-color);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            min-height: 50px;
+            max-height: 300px;
+            overflow: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            border-bottom-left-radius: var(--border-radius-md);
+            border-bottom-right-radius: var(--border-radius-md);
+        }
+
+        .query-results table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        .query-results th, .query-results td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .query-results th {
+            background-color: var(--primary-color);
+            color: var(--button-text-color);
+            font-weight: 600;
+        }
+
+        .exercise-section {
+            margin-top: 3rem;
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+        }
+
+        .exercise-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            background-color: var(--background-color); /* Lighter background for exercises */
+        }
+
+        .exercise-item h3 {
+            margin-top: 0;
+            color: var(--heading-color);
+            font-size: 1.3rem;
+        }
+
+        .exercise-item p {
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chapter-title {
+                font-size: 2rem;
+            }
+            .chapter-intro {
+                font-size: 1rem;
+            }
+            .chapter-section {
+                padding: 1.5rem;
+            }
+            .chapter-section h2 {
+                font-size: 1.8rem;
+            }
+            .chapter-section h3 {
+                font-size: 1.4rem;
+            }
+            .editor-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .editor-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../../index.html">The SQL Path</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../../index.html#chapters">Chapters</a></li>
+                    <li><a href="../../index.html#about">About</a></li>
+                    <li><a href="../../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon for theme toggle - will be set by JavaScript -->
+                    <span class="icon">💡</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="chapter-main">
+        <div class="container chapter-container">
+            <nav class="breadcrumbs">
+                <a href="../../index.html">Home</a> &gt; <a href="../../index.html#chapters">Chapters</a> &gt; <span>Chapter 9</span>
+            </nav>
+
+            <h1 class="chapter-title">Chapter 9: Conditional Logic and Data Transformation – `CASE` Statements and Data Types</h1>
+            <p class="chapter-intro">SQL isn't just for retrieving and summarizing data; it's also a powerful tool for transforming and presenting data in new, more meaningful ways. This chapter introduces two essential concepts for data manipulation: the `CASE` statement, which allows you to apply conditional logic to your results, and data type conversions, which enable you to change how data is stored or displayed.</p>
+
+            <section class="chapter-section">
+                <h2>9.1 The `CASE` Statement: Conditional Expressions</h2>
+                <p>The `CASE` statement (also known as a `CASE` expression) allows you to implement "if-then-else" logic directly within your SQL queries. It's incredibly versatile and can be used in `SELECT` lists (to create new columns based on conditions), `WHERE` clauses, `ORDER BY` clauses, and even with aggregate functions.</p>
+
+                <h3>Simple `CASE` Syntax:</h3>
+                <pre><code class="language-sql">CASE
+    WHEN condition1 THEN result1
+    WHEN condition2 THEN result2
+    ...
+    ELSE resultN -- Optional: if no condition is met
+END AS new_column_name</code></pre>
+                <p>Let's categorize products based on their price: 'Budget' for prices under $100, 'Mid-Range' for prices between $100 and $300, and 'Premium' for anything above $300.</p>
+                <div class="code-block-container">
+                    <div id="editor-9-1" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-9-1">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-9-1">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+
+                <h3>Searched `CASE` (with multiple `WHEN` clauses)</h3>
+                <p>The `CASE` statement evaluates each `WHEN` condition in order. As soon as a condition is met, the corresponding `THEN` result is returned, and the rest of the conditions are skipped. If no `WHEN` condition is met and an `ELSE` clause is provided, the `ELSE` result is returned. If no `ELSE` is provided, `NULL` is returned.</p>
+                <p>Let's categorize customer countries into broader regions: 'Americas', 'Europe', 'Other'.</p>
+                <div class="code-block-container">
+                    <div id="editor-9-2" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-9-2">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-9-2">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>9.2 `CASE` with Aggregate Functions</h2>
+                <p>You can use `CASE` statements inside aggregate functions to count or sum specific subsets of data within your groups. This is a powerful technique for creating conditional aggregations.</p>
+                <p>Let's count how many customers are from 'USA', 'Canada', and 'UK' respectively, in a single query.</p>
+                <div class="code-block-container">
+                    <div id="editor-9-3" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-9-3">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-9-3">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Notice how `CASE WHEN country = 'USA' THEN 1 ELSE 0 END` effectively creates a binary flag (1 for USA, 0 otherwise) that `SUM()` can then add up, counting only the 'USA' customers.</p>
+            </section>
+
+            <section class="chapter-section">
+                <h2>9.3 Data Type Conversions (`CAST` / `CONVERT`)</h2>
+                <p>SQL databases store data in specific data types (e.g., INTEGER, TEXT, REAL, DATE). Sometimes, you need to convert data from one type to another for calculations, formatting, or comparisons. While syntax varies slightly by database (e.g., `CAST` is standard, `CONVERT` is SQL Server specific), the principle is the same.</p>
+                <p><strong>SQLite Note:</strong> SQLite has flexible typing, but you can still explicitly convert data types using `CAST(expression AS type)` or functions like `STRFTIME()` for dates/times, `PRINTF()` for formatting, or implicit conversions during operations.</p>
+                <p>Let's convert the `total_amount` (which is stored as `REAL`) to `INTEGER` to remove decimal places, and `registration_date` (TEXT) to a specific format using `STRFTIME`.</p>
+                <div class="code-block-container">
+                    <div id="editor-9-4" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-9-4">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-9-4">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>The `STRFTIME('%Y-%m', date_column)` function is particularly useful in SQLite for extracting parts of dates (like year, month, day) or reformatting them. This is often necessary when grouping by time periods.</p>
+                <p>Let's count orders per month-year combination.</p>
+                <div class="code-block-container">
+                    <div id="editor-9-5" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-9-5">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-9-5">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="exercise-section">
+                <h2>Chapter 9 Exercises</h2>
+                <p>Master conditional logic and data type handling with these exercises.</p>
+
+                <div class="exercise-item" data-exercise-id="chapter-09-exercise-9-1">
+                    <h3>Exercise 9.1: Product Availability Status</h3>
+                    <p>Create a new column called `availability_status` for all products. If `stock_quantity` is 0, status is 'Out of Stock'. If `stock_quantity` is between 1 and 20 (inclusive), status is 'Low Stock'. Otherwise, status is 'In Stock'. Display `product_name`, `stock_quantity`, and `availability_status`. Order by `availability_status` and then `product_name`.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-9-1" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-9-1">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-09-exercise-9-1">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-9-1">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-09-exercise-9-2">
+                    <h3>Exercise 9.2: Order Volume by Quarter</h3>
+                    <p>Count the total number of orders for each calendar quarter of their `order_date`. Display the `quarter_year` (e.g., 'Q1 2022', 'Q2 2022') and the `order_count`. (Hint: You'll need to use `STRFTIME` and `CASE` or concatenation to form the quarter-year string. SQLite's `STRFTIME('%Q', date)` gives the quarter number (1-4).)</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-9-2" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-9-2">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-09-exercise-9-2">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-9-2">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-09-exercise-9-3">
+                    <h3>Exercise 9.3: Customer Loyalty Tier</h3>
+                    <p>For each customer, determine their loyalty tier based on their total `total_amount` spent across all orders.
+                        <ul>
+                            <li>'Bronze' if total spent is less than $100.</li>
+                            <li>'Silver' if total spent is between $100 and $300 (inclusive).</li>
+                            <li>'Gold' if total spent is greater than $300.</li>
+                            <li>If a customer has no orders, their tier should be 'New Customer'.</li>
+                        </ul>
+                        Display `customer_id`, `first_name`, `last_name`, `total_spent` (or 0 if no orders), and `loyalty_tier`. Order by `customer_id`.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-9-3" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-9-3">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-09-exercise-9-3">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-9-3">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> The SQL Path. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global scripts: main.js handles theme toggle, etc. -->
+    <script type="module" src="../../assets/js/main.js"></script>
+
+    <!-- Chapter-specific scripts for SQL Editor and Database interaction -->
+    <script type="module">
+        import { loadMonacoEditor, initializeMonacoEditor, getEditorContent, setEditorContent } from '../../assets/js/code-editor.js';
+        import { initializeDatabase, executeSql } from '../../assets/js/sql-engine.js';
+        import { setExerciseCompleted, isExerciseCompleted } from '../../assets/js/progress-tracking.js';
+        import { getElementById, createElement, emptyElement } from '../../assets/js/utils.js';
+
+        // Initial SQL content for the demonstration editors
+        const initialQuery9_1 = `SELECT
+    product_name,
+    price,
+    CASE
+        WHEN price < 100 THEN 'Budget'
+        WHEN price BETWEEN 100 AND 300 THEN 'Mid-Range'
+        ELSE 'Premium'
+    END AS price_category
+FROM Products
+ORDER BY price_category, product_name;`;
+        const initialQuery9_2 = `SELECT
+    first_name,
+    last_name,
+    country,
+    CASE country
+        WHEN 'USA' THEN 'Americas'
+        WHEN 'Canada' THEN 'Americas'
+        WHEN 'Mexico' THEN 'Americas'
+        WHEN 'Argentina' THEN 'Americas'
+        WHEN 'Chile' THEN 'Americas'
+        WHEN 'Colombia' THEN 'Americas'
+        WHEN 'Peru' THEN 'Americas'
+        WHEN 'UK' THEN 'Europe'
+        WHEN 'Germany' THEN 'Europe'
+        WHEN 'Spain' THEN 'Europe'
+        ELSE 'Other'
+    END AS region
+FROM Customers
+ORDER BY region, country;`;
+        const initialQuery9_3 = `SELECT
+    status,
+    SUM(CASE WHEN total_amount < 100 THEN 1 ELSE 0 END) AS less_than_100,
+    SUM(CASE WHEN total_amount >= 100 AND total_amount <= 300 THEN 1 ELSE 0 END) AS between_100_300,
+    SUM(CASE WHEN total_amount > 300 THEN 1 ELSE 0 END) AS greater_than_300
+FROM Orders
+GROUP BY status;`;
+        const initialQuery9_4 = `SELECT
+    product_name,
+    CAST(price AS INTEGER) AS price_as_integer,
+    STRFTIME('%Y-%m-%d', registration_date) AS formatted_date
+FROM Products, Customers
+LIMIT 5; -- Added LIMIT to prevent large output`;
+        const initialQuery9_5 = `SELECT
+    STRFTIME('%Y-%m', order_date) AS year_month,
+    COUNT(order_id) AS order_count
+FROM Orders
+GROUP BY year_month
+ORDER BY year_month;`;
+
+
+        // Initial SQL content for exercises
+        const initialExercise9_1 = `SELECT
+    product_name,
+    stock_quantity,
+    CASE
+        WHEN stock_quantity = 0 THEN 'Out of Stock'
+        WHEN stock_quantity BETWEEN 1 AND 20 THEN 'Low Stock'
+        ELSE 'In Stock'
+    END AS availability_status
+FROM Products
+ORDER BY availability_status ASC, product_name ASC;`;
+        const initialExercise9_2 = `SELECT
+    'Q' || STRFTIME('%Q', order_date) || ' ' || STRFTIME('%Y', order_date) AS quarter_year,
+    COUNT(order_id) AS order_count
+FROM Orders
+GROUP BY quarter_year
+ORDER BY quarter_year ASC;`;
+        const initialExercise9_3 = `WITH CustomerTotalSpend AS (
+    SELECT
+        c.customer_id,
+        c.first_name,
+        c.last_name,
+        COALESCE(SUM(o.total_amount), 0) AS total_spent
+    FROM Customers c
+    LEFT JOIN Orders o ON c.customer_id = o.customer_id
+    GROUP BY c.customer_id, c.first_name, c.last_name
+)
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    total_spent,
+    CASE
+        WHEN total_spent < 100 THEN 'Bronze'
+        WHEN total_spent BETWEEN 100 AND 300 THEN 'Silver'
+        WHEN total_spent > 300 THEN 'Gold'
+        ELSE 'New Customer' -- Catches customers with 0 total_spent (no orders)
+    END AS loyalty_tier
+FROM CustomerTotalSpend
+ORDER BY customer_id ASC;`;
+
+
+        // Keep track of editors
+        const editors = {};
+
+        /**
+         * Renders query results in a table format.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function renderResults(resultsContainer, columns, rows) {
+            emptyElement(resultsContainer); // Clear previous results
+
+            if (!columns || columns.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No columns returned.' }));
+                return;
+            }
+            if (!rows || rows.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No rows returned.' }));
+                return;
+            }
+
+            const table = createElement('table');
+            const thead = createElement('thead');
+            const tbody = createElement('tbody');
+
+            // Create table header
+            const headerRow = createElement('tr');
+            columns.forEach(col => {
+                headerRow.appendChild(createElement('th', { textContent: col }));
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            rows.forEach(rowData => {
+                const row = createElement('tr');
+                rowData.forEach(cellData => {
+                    // Handle NULL values, format numbers if needed (e.g., for rounded percentages or currency)
+                    let displayData = cellData;
+                    if (cellData === null) {
+                        displayData = 'NULL';
+                    } else if (typeof cellData === 'number' && !Number.isInteger(cellData)) {
+                        // Round numbers to 2 decimal places for display consistency
+                        displayData = cellData.toFixed(2);
+                    }
+                    row.appendChild(createElement('td', { textContent: displayData.toString() }));
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            resultsContainer.appendChild(table);
+        }
+
+        /**
+         * Displays a message in the results container.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function displayMessage(resultsContainer, message, isError = false) {
+            emptyElement(resultsContainer);
+            const p = createElement('p', { textContent: message });
+            if (isError) {
+                p.style.color = 'var(--primary-color)';
+                p.style.fontWeight = 'bold';
+            }
+            resultsContainer.appendChild(p);
+        }
+
+        /**
+         * Handles the execution of a SQL query from an editor.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        async function handleRunQuery(editorId, resultsId) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+
+            if (!editor || !resultsContainer) {
+                console.error(`Editor (${editorId}) or results container (${resultsId}) not found.`);
+                return;
+            }
+
+            const query = editor.getValue();
+            if (!query.trim()) {
+                displayMessage(resultsContainer, 'Please enter a SQL query to execute.', true);
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Executing query...', false);
+
+            try {
+                const result = executeSql(query);
+
+                if (result.error) {
+                    displayMessage(resultsContainer, `Error: ${result.error}`, true);
+                } else if (result.isSelect) {
+                    renderResults(resultsContainer, result.columns, result.rows);
+                } else {
+                    displayMessage(resultsContainer, result.message || 'Command executed successfully.', false);
+                }
+            } catch (e) {
+                console.error('Unexpected error during query execution:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred: ${e.message}`, true);
+            }
+        }
+
+        /**
+         * Initializes an individual editor and sets up its run button.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorAndRunButton(editorId, initialContent, resultsId) {
+            const editorDiv = getElementById(editorId);
+            if (editorDiv) {
+                editors[editorId] = initializeMonacoEditor(editorId, initialContent, document.documentElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light');
+
+                const runButton = document.querySelector(`button.run-query-btn[data-editor-id="${editorId}"]`);
+                if (runButton) {
+                    runButton.addEventListener('click', () => handleRunQuery(editorId, resultsId));
+                }
+            }
+        }
+
+        /**
+         * Sets up the theme change listener for all editors.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorThemeListener() {
+            const htmlElement = document.documentElement;
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                        const newTheme = htmlElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light';
+                        for (const editorId in editors) {
+                            if (editors[editorId]) {
+                                editors[editorId].updateOptions({ theme: newTheme });
+                            }
+                        }
+                    }
+                });
+            });
+            observer.observe(htmlElement, { attributes: true });
+        }
+
+        /**
+         * Compares two 2D arrays (results from SQL queries).
+         * This version is specifically tuned for window functions where both column and row order are crucial.
+         * It also handles potential floating point differences by rounding.
+         * @param {Array<string>} userColumns User's query columns.
+         * @param {Array<Array<any>>} userRows User's query rows.
+         * @param {Array<string>} expectedColumns Expected query columns.
+         * @param {Array<Array<any>>} expectedRows Expected query rows.
+         * @returns {boolean} True if results match, false otherwise.
+         */
+        function compareQueryResults(userColumns, userRows, expectedColumns, expectedRows) {
+            // 1. Check column count and names (order matters for window functions typically)
+            if (userColumns.length !== expectedColumns.length) {
+                console.log("Column count mismatch.");
+                return false;
+            }
+            if (JSON.stringify(userColumns) !== JSON.stringify(expectedColumns)) {
+                console.log("Column names or their order mismatch.");
+                return false;
+            }
+
+            // 2. Check row count
+            if (userRows.length !== expectedRows.length) {
+                console.log(`Row count mismatch. Expected ${expectedRows.length}, got ${userRows.length}.`);
+                return false;
+            }
+
+            // 3. Deep compare rows, handling potential floating point differences and NULLs
+            for (let r = 0; r < userRows.length; r++) {
+                if (userRows[r].length !== expectedRows[r].length) {
+                    console.log(`Cell count mismatch in row ${r}.`);
+                    return false;
+                }
+                for (let c = 0; c < userRows[r].length; c++) {
+                    const userCell = userRows[r][c];
+                    const expectedCell = expectedRows[r][c];
+
+                    // Handle NULLs
+                    if (userCell === null && expectedCell === null) {
+                        continue; // Both are NULL, consider them equal
+                    }
+                    if (userCell === null || expectedCell === null) {
+                        console.log(`NULL mismatch at row ${r}, col ${c}.`);
+                        return false; // One is NULL, other is not
+                    }
+
+                    // For numbers, compare with a tolerance for floating-point inaccuracies
+                    // Also consider parsing numbers from strings if they are formatted differently
+                    let numUser = typeof userCell === 'number' ? userCell : parseFloat(userCell);
+                    let numExpected = typeof expectedCell === 'number' ? expectedCell : parseFloat(expectedCell);
+
+                    if (!isNaN(numUser) && !isNaN(numExpected)) { // If both are valid numbers
+                        if (Math.abs(numUser - numExpected) > 0.01) { // Tolerance adjusted slightly for currency/percentages
+                            console.log(`Numeric mismatch at row ${r}, col ${c}. User: ${userCell}, Expected: ${expectedCell}`);
+                            return false;
+                        }
+                    } else if (String(userCell) !== String(expectedCell)) {
+                        // For other types (or non-numeric strings), direct string comparison
+                        console.log(`Value mismatch at row ${r}, col ${c}. User: ${String(userCell)}, Expected: ${String(expectedCell)}`);
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+
+        /**
+         * Handles the "Check Answer" functionality for exercises.
+         * @param {string} exerciseId The unique ID of the exercise.
+         * @param {string} editorId The ID of the associated editor.
+         * @param {string} resultsId The ID of the associated results container.
+         * @param {string} expectedQuery The correct SQL query for validation.
+         * @param {boolean} [requiresSelect=true] If true, validates only SELECT queries.
+         */
+        async function handleCheckAnswer(exerciseId, editorId, resultsId, expectedQuery, requiresSelect = true) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+            const exerciseItemElement = getElementById(exerciseId);
+
+            if (!editor || !resultsContainer || !exerciseItemElement) {
+                console.error(`Elements for exercise check not found: Editor(${editorId}), Results(${resultsId}), Item(${exerciseId}).`);
+                return;
+            }
+
+            const userQuery = editor.getValue();
+            if (!userQuery.trim()) {
+                displayMessage(resultsContainer, 'Please write your query before checking the answer.', true);
+                setExerciseCompleted(exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Checking your answer...', false);
+
+            try {
+                const userResult = executeSql(userQuery);
+
+                if (userResult.error) {
+                    displayMessage(resultsContainer, `Your query has an error: ${userResult.error}`, true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                if (requiresSelect && !userResult.isSelect) {
+                    displayMessage(resultsContainer, 'Please provide a SELECT query to check your answer.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                const expectedResult = executeSql(expectedQuery);
+
+                if (expectedResult.error) {
+                    console.error('Error in expected query for exercise validation:', expectedResult.error);
+                    displayMessage(resultsContainer, 'An internal error occurred while validating the exercise. Please try again later.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                let isCorrect = false;
+                if (requiresSelect) {
+                    isCorrect = compareQueryResults(userResult.columns, userResult.rows, expectedResult.columns, expectedResult.rows);
+                } else {
+                    isCorrect = !userResult.error;
+                }
+
+                if (isCorrect) {
+                    displayMessage(resultsContainer, '🎉 Correct! Well done!', false);
+                    setExerciseCompleted('chapter-09', exerciseId, true); // Mark as completed for chapter 09
+                    exerciseItemElement.style.border = '2px solid var(--primary-color)'; // Visual feedback
+                } else {
+                    displayMessage(resultsContainer, '❌ Incorrect. Review your query and try again.', true);
+                    setExerciseCompleted('chapter-09', exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)'; // Reset border
+                }
+
+                renderResults(resultsContainer, userResult.columns, userResult.rows);
+
+            } catch (e) {
+                console.error('Error during exercise check:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred during check: ${e.message}`, true);
+                setExerciseCompleted('chapter-09', exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+            }
+        }
+
+
+        // DOM Content Loaded Handler
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Chapter 9: DOM Content Loaded.');
+
+            // Initialize the database for this chapter
+            try {
+                await initializeDatabase();
+            } catch (e) {
+                console.error("Failed to initialize database for Chapter 9:", e);
+                displayMessage(getElementById('results-9-1'), `Failed to load database: ${e.message}. Interactive exercises might not work.`, true);
+                return;
+            }
+
+            // Load Monaco Editor
+            try {
+                await loadMonacoEditor();
+            } catch (e) {
+                console.error("Failed to load Monaco Editor for Chapter 9:", e);
+                displayMessage(getElementById('results-9-1'), `Failed to load code editor: ${e.message}. Code interaction will not work.`, true);
+                return;
+            }
+
+            // Set up demonstration editors
+            setupEditorAndRunButton('editor-9-1', initialQuery9_1, 'results-9-1');
+            setupEditorAndRunButton('editor-9-2', initialQuery9_2, 'results-9-2');
+            setupEditorAndRunButton('editor-9-3', initialQuery9_3, 'results-9-3');
+            setupEditorAndRunButton('editor-9-4', initialQuery9_4, 'results-9-4');
+            setupEditorAndRunButton('editor-9-5', initialQuery9_5, 'results-9-5');
+
+
+            // Set up exercise editors and their check buttons
+            setupEditorAndRunButton('exercise-editor-9-1', initialExercise9_1, 'exercise-results-9-1');
+            const checkBtn9_1 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-09-exercise-9-1"]');
+            if (checkBtn9_1) {
+                checkBtn9_1.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-09-exercise-9-1',
+                    'exercise-editor-9-1',
+                    'exercise-results-9-1',
+                    `SELECT
+    product_name,
+    stock_quantity,
+    CASE
+        WHEN stock_quantity = 0 THEN 'Out of Stock'
+        WHEN stock_quantity BETWEEN 1 AND 20 THEN 'Low Stock'
+        ELSE 'In Stock'
+    END AS availability_status
+FROM Products
+ORDER BY availability_status ASC, product_name ASC;`
+                ));
+                if (isExerciseCompleted('chapter-09', 'chapter-09-exercise-9-1')) {
+                    getElementById('chapter-09-exercise-9-1').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-9-2', initialExercise9_2, 'exercise-results-9-2');
+            const checkBtn9_2 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-09-exercise-9-2"]');
+            if (checkBtn9_2) {
+                checkBtn9_2.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-09-exercise-9-2',
+                    'exercise-editor-9-2',
+                    'exercise-results-9-2',
+                    `SELECT
+    'Q' || STRFTIME('%Q', order_date) || ' ' || STRFTIME('%Y', order_date) AS quarter_year,
+    COUNT(order_id) AS order_count
+FROM Orders
+GROUP BY quarter_year
+ORDER BY quarter_year ASC;`
+                ));
+                 if (isExerciseCompleted('chapter-09', 'chapter-09-exercise-9-2')) {
+                    getElementById('chapter-09-exercise-9-2').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-9-3', initialExercise9_3, 'exercise-results-9-3');
+            const checkBtn9_3 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-09-exercise-9-3"]');
+            if (checkBtn9_3) {
+                checkBtn9_3.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-09-exercise-9-3',
+                    'exercise-editor-9-3',
+                    'exercise-results-9-3',
+                    `WITH CustomerTotalSpend AS (
+    SELECT
+        c.customer_id,
+        c.first_name,
+        c.last_name,
+        COALESCE(SUM(o.total_amount), 0) AS total_spent
+    FROM Customers c
+    LEFT JOIN Orders o ON c.customer_id = o.customer_id
+    GROUP BY c.customer_id, c.first_name, c.last_name
+)
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    total_spent,
+    CASE
+        WHEN total_spent < 100 THEN 'Bronze'
+        WHEN total_spent BETWEEN 100 AND 300 THEN 'Silver'
+        WHEN total_spent > 300 THEN 'Gold'
+        ELSE 'New Customer'
+    END AS loyalty_tier
+FROM CustomerTotalSpend
+ORDER BY customer_id ASC;`
+                ));
+                 if (isExerciseCompleted('chapter-09', 'chapter-09-exercise-9-3')) {
+                    getElementById('chapter-09-exercise-9-3').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+
+            setupEditorThemeListener();
+        });
+
+        // Ensure editors resize when window resizes
+        window.addEventListener('resize', () => {
+            for (const editorId in editors) {
+                if (editors[editorId]) {
+                    editors[editorId].layout();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix C: Index - The SQL Path</title>
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+    <!-- Main stylesheet for general layout and responsiveness -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Theme stylesheet for dark/light mode variables and transitions -->
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - Inter for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Specific styles for the index for better readability */
+        .index-list {
+            columns: 2; /* Two columns for desktop */
+            column-gap: 3rem;
+            list-style: none;
+            padding: 0;
+            margin-top: 2rem;
+        }
+
+        .index-list li {
+            margin-bottom: 0.5rem;
+            break-inside: avoid-column; /* Prevent items from breaking across columns */
+        }
+
+        .index-list li a {
+            font-size: 1.05rem;
+            color: var(--text-color);
+            transition: color 0.2s ease;
+        }
+
+        .index-list li a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .index-list li .page-numbers {
+            font-size: 0.9rem;
+            color: var(--nav-link-color); /* Lighter color for page numbers */
+            margin-left: 0.5rem;
+        }
+
+        /* Responsive adjustments for index */
+        @media (max-width: 768px) {
+            .index-list {
+                columns: 1; /* Single column on mobile */
+                column-gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../../index.html">The SQL Path</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../../index.html#chapters">Chapters</a></li>
+                    <li><a href="../../index.html#about">About</a></li>
+                    <li><a href="../../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon for theme toggle - will be set by JavaScript -->
+                    <span class="icon">💡</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="chapter-main">
+        <div class="container chapter-container">
+            <nav class="breadcrumbs">
+                <a href="../../index.html">Home</a> &gt; <a href="../../index.html#chapters">Chapters</a> &gt; <span>Appendix C</span>
+            </nav>
+
+            <h1 class="chapter-title">Appendix C: Index</h1>
+            <p class="chapter-intro">This index provides an alphabetical listing of key terms, functions, clauses, and concepts discussed in "The SQL Path." Each entry is followed by references to relevant chapters or sections for easy navigation.</p>
+
+            <section class="index-section">
+                <!-- Example entries. These will be dynamically linked to actual chapter sections later -->
+                <ul class="index-list">
+                    <li><a href="#aggregate-function">Aggregate Function</a> <span class="page-numbers">(Ch 4, App B)</span></li>
+                    <li><a href="#alias">Alias</a> <span class="page-numbers">(Ch 1, Ch 5, App B)</span></li>
+                    <li><a href="#and-operator">AND operator</a> <span class="page-numbers">(Ch 2)</span></li>
+                    <li><a href="#asc">ASC</a> <span class="page-numbers">(Ch 3, App A, App B)</span></li>
+                    <li><a href="#avg">AVG()</a> <span class="page-numbers">(Ch 4, App A, App B)</span></li>
+                    <li><a href="#between">BETWEEN</a> <span class="page-numbers">(Ch 2, App A, App B)</span></li>
+                    <li><a href="#case-statement">CASE Statement</a> <span class="page-numbers">(Ch 9, App A, App B)</span></li>
+                    <li><a href="#column">Column</a> <span class="page-numbers">(Ch 1, App B)</span></li>
+                    <li><a href="#common-table-expression">Common Table Expression (CTE)</a> <span class="page-numbers">(Ch 7, App A, App B)</span></li>
+                    <li><a href="#count">COUNT()</a> <span class="page-numbers">(Ch 4, App A, App B)</span></li>
+                    <li><a href="#crud">CRUD</a> <span class="page-numbers">(App B)</span></li>
+                    <li><a href="#database">Database</a> <span class="page-numbers">(Intro, App B)</span></li>
+                    <li><a href="#data-definition-language">Data Definition Language (DDL)</a> <span class="page-numbers">(App B)</span></li>
+                    <li><a href="#data-manipulation-language">Data Manipulation Language (DML)</a> <span class="page-numbers">(Intro, App A, App B)</span></li>
+                    <li><a href="#data-type">Data Type</a> <span class="page-numbers">(Intro, App B)</span></li>
+                    <li><a href="#delete">DELETE</a> <span class="page-numbers">(App A)</span></li>
+                    <li><a href="#desc">DESC</a> <span class="page-numbers">(Ch 3, App A, App B)</span></li>
+                    <li><a href="#distinct">DISTINCT</a> <span class="page-numbers">(Ch 1, App A, App B)</span></li>
+                    <li><a href="#drop-table">DROP TABLE</a> <span class="page-numbers">(App B)</span></li>
+                    <li><a href="#foreign-key">Foreign Key (FK)</a> <span class="page-numbers">(Intro, Ch 5, App B)</span></li>
+                    <li><a href="#from-clause">FROM clause</a> <span class="page-numbers">(Ch 1, App A, App B)</span></li>
+                    <li><a href="#group-by">GROUP BY clause</a> <span class="page-numbers">(Ch 4, App A, App B)</span></li>
+                    <li><a href="#having-clause">HAVING clause</a> <span class="page-numbers">(Ch 4, App A, App B)</span></li>
+                    <li><a href="#in-operator">IN operator</a> <span class="page-numbers">(Ch 2)</span></li>
+                    <li><a href="#inner-join">INNER JOIN</a> <span class="page-numbers">(Ch 5, App A, App B)</span></li>
+                    <li><a href="#insert-into">INSERT INTO</a> <span class="page-numbers">(App A)</span></li>
+                    <li><a href="#is-null">IS NULL / IS NOT NULL</a> <span class="page-numbers">(Ch 2)</span></li>
+                    <li><a href="#join">JOIN</a> <span class="page-numbers">(Ch 5, App A, App B)</span></li>
+                    <li><a href="#lag">LAG()</a> <span class="page-numbers">(Ch 8, App A, App B)</span></li>
+                    <li><a href="#lead">LEAD()</a> <span class="page-numbers">(Ch 8)</span></li>
+                    <li><a href="#left-join">LEFT JOIN</a> <span class="page-numbers">(Ch 5, App A, App B)</span></li>
+                    <li><a href="#like-operator">LIKE operator</a> <span class="page-numbers">(Ch 2, App A, App B)</span></li>
+                    <li><a href="#limit-clause">LIMIT clause</a> <span class="page-numbers">(Ch 3, App A, App B)</span></li>
+                    <li><a href="#max">MAX()</a> <span class="page-numbers">(Ch 4, App A, App B)</span></li>
+                    <li><a href="#min">MIN()</a> <span class="page-numbers">(Ch 4, App A, App B)</span></li>
+                    <li><a href="#null">NULL</a> <span class="page-numbers">(Ch 2, App B)</span></li>
+                    <li><a href="#or-operator">OR operator</a> <span class="page-numbers">(Ch 2)</span></li>
+                    <li><a href="#order-by">ORDER BY clause</a> <span class="page-numbers">(Ch 3, App A, App B)</span></li>
+                    <li><a href="#primary-key">Primary Key (PK)</a> <span class="page-numbers">(Intro, Ch 5, App B)</span></li>
+                    <li><a href="#products-table">Products table</a> <span class="page-numbers">(Intro, Ch 1, Ch 2, Ch 4)</span></li>
+                    <li><a href="#query">Query</a> <span class="page-numbers">(Intro, App B)</span></li>
+                    <li><a href="#rank">RANK()</a> <span class="page-numbers">(Ch 8, App A, App B)</span></li>
+                    <li><a href="#relational-database">Relational Database</a> <span class="page-numbers">(Intro, App B)</span></li>
+                    <li><a href="#row">Row</a> <span class="page-numbers">(Ch 1, App B)</span></li>
+                    <li><a href="#row-number">ROW_NUMBER()</a> <span class="page-numbers">(Ch 8, App A, App B)</span></li>
+                    <li><a href="#schema">Schema</a> <span class="page-numbers">(Intro, App B)</span></li>
+                    <li><a href="#select-statement">SELECT statement</a> <span class="page-numbers">(Ch 1, App A, App B)</span></li>
+                    <li><a href="#skill-checkpoints">Skill Checkpoints</a> <span class="page-numbers">(Ch 3, Ch 6, Ch 9)</span></li>
+                    <li><a href="#sql">SQL</a> <span class="page-numbers">(Intro, App B)</span></li>
+                    <li><a href="#sqlite">SQLite</a> <span class="page-numbers">(Intro, App B)</span></li>
+                    <li><a href="#subquery">Subquery</a> <span class="page-numbers">(Ch 6, App A, App B)</span></li>
+                    <li><a href="#sum">SUM()</a> <span class="page-numbers">(Ch 4, App A, App B)</span></li>
+                    <li><a href="#table">Table</a> <span class="page-numbers">(Ch 1, App B)</span></li>
+                    <li><a href="#top-clause">TOP clause</a> <span class="page-numbers">(Ch 3)</span></li>
+                    <li><a href="#union">UNION</a> <span class="page-numbers">(App A, App B)</span></li>
+                    <li><a href="#update">UPDATE</a> <span class="page-numbers">(App A)</span></li>
+                    <li><a href="#where-clause">WHERE clause</a> <span class="page-numbers">(Ch 2, App A, App B)</span></li>
+                    <li><a href="#window-function">Window Function</a> <span class="page-numbers">(Ch 8, App A, App B)</span></li>
+                    <li><a href="#with-clause">WITH clause</a> <span class="page-numbers">(Ch 7)</span></li>
+                </ul>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> The SQL Path. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript file -->
+    <script type="module" src="../../assets/js/main.js"></script>
+</body>
+</html>

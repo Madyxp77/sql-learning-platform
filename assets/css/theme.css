@@ -1,0 +1,125 @@
+/* assets/css/theme.css */
+
+/* Define CSS Custom Properties (Variables) for colors */
+/* These variables will be overridden when the 'dark' data-theme is applied to the html element */
+
+/* --- Light Theme (Default) --- */
+:root {
+    /* Primary Colors */
+    --primary-color: #007bff; /* A vibrant blue for accents, links, and main buttons */
+    --primary-hover-color: #0056b3; /* Darker blue for hover states */
+
+    /* Text Colors */
+    --text-color: #333; /* Dark text for light backgrounds */
+    --heading-color: #222; /* Slightly darker for headings */
+    --hero-text-color: #fff; /* White text for hero section (assuming dark hero background) */
+    --hero-title-color: #fff; /* White title for hero section */
+    --button-text-color: #fff; /* White text for primary buttons */
+    --footer-text-color: #ccc; /* Light gray text for footer */
+    --footer-link-color: #fff; /* White links in footer */
+    --footer-link-hover-color: #e0e0e0; /* Slightly lighter white for footer link hover */
+
+    /* Background Colors */
+    --background-color: #f8f9fa; /* Light background for the main body */
+    --header-bg-color: #ffffff; /* White background for the header */
+    --hero-bg-color: #343a40; /* Dark background for the hero section */
+    --content-bg-color: #ffffff; /* White background for main content sections */
+    --card-bg-color: #ffffff; /* White background for cards/feature items */
+    --footer-bg-color: #212529; /* Dark background for the footer */
+
+    /* Border & Shadow Colors */
+    --border-color: #e0e0e0; /* Light gray for borders */
+    --header-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for header */
+    --card-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); /* Card shadow */
+    --card-hover-shadow: 0 6px 15px rgba(0, 0, 0, 0.12); /* Enhanced card shadow on hover */
+
+    /* Theme Toggle Colors */
+    --toggle-bg: #e0e0e0; /* Light background for the toggle button */
+    --toggle-border: #ccc; /* Light border for the toggle button */
+    --toggle-color: #555; /* Icon color for the toggle button */
+    --toggle-hover-bg: #d0d0d0; /* Slightly darker hover background */
+    --toggle-hover-border: #bbb; /* Slightly darker hover border */
+
+    /* Navigation Link Colors */
+    --nav-link-color: #555; /* Dark gray for navigation links */
+    --nav-link-hover-color: #007bff; /* Primary color on hover */
+
+    /* Code Block Colors (placeholders for future syntax highlighting) */
+    --code-bg-color: #f4f4f4; /* Light gray for code block background */
+    --code-text-color: #333; /* Dark text for code */
+    --code-border-color: #ddd; /* Light border for code blocks */
+}
+
+/* --- Dark Theme --- */
+/* Apply these variables when the html element has the data-theme="dark" attribute */
+html[data-theme='dark'] {
+    /* Primary Colors */
+    --primary-color: #61dafb; /* A vibrant light blue/cyan for accents */
+    --primary-hover-color: #21a1f1; /* Darker blue for hover states */
+
+    /* Text Colors */
+    --text-color: #e0e0e0; /* Light gray text for dark backgrounds */
+    --heading-color: #f0f0f0; /* Lighter for headings */
+    --hero-text-color: #e0e0e0; /* Light text for hero section */
+    --hero-title-color: #ffffff; /* White title for hero section */
+    --button-text-color: #222; /* Dark text for primary buttons on dark theme */
+    --footer-text-color: #a0a0a0; /* Slightly darker gray for footer text */
+    --footer-link-color: #e0e0e0; /* Light links in footer */
+    --footer-link-hover-color: #61dafb; /* Primary color for footer link hover */
+
+    /* Background Colors */
+    --background-color: #282c34; /* Dark background for the main body */
+    --header-bg-color: #212529; /* Darker background for the header */
+    --hero-bg-color: #1a1e22; /* Even darker background for the hero section */
+    --content-bg-color: #212529; /* Dark background for main content sections */
+    --card-bg-color: #2c313a; /* Dark background for cards/feature items */
+    --footer-bg-color: #1a1e22; /* Darker background for the footer */
+
+    /* Border & Shadow Colors */
+    --border-color: #3a3f4a; /* Darker border for separation */
+    --header-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* More prominent shadow for dark theme */
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* Dark card shadow */
+    --card-hover-shadow: 0 6px 18px rgba(0, 0, 0, 0.6); /* Enhanced dark card shadow on hover */
+
+    /* Theme Toggle Colors */
+    --toggle-bg: #4a4f58; /* Darker background for the toggle button */
+    --toggle-border: #666; /* Darker border for the toggle button */
+    --toggle-color: #f0f0f0; /* Light icon color for the toggle button */
+    --toggle-hover-bg: #5a5f68; /* Slightly lighter hover background */
+    --toggle-hover-border: #777; /* Slightly lighter hover border */
+
+    /* Navigation Link Colors */
+    --nav-link-color: #b0b0b0; /* Light gray for navigation links */
+    --nav-link-hover-color: #61dafb; /* Primary color on hover */
+
+    /* Code Block Colors (placeholders for future syntax highlighting) */
+    --code-bg-color: #1e1e1e; /* Very dark background for code blocks */
+    --code-text-color: #d4d4d4; /* Light text for code */
+    --code-border-color: #444; /* Darker border for code blocks */
+}
+
+/* --- Global Transitions for Smooth Theme Change --- */
+/* Apply transitions to properties that change with the theme to create a smooth effect */
+body,
+.main-header,
+#theme-toggle,
+.btn, .btn-secondary:hover,
+.content-section,
+.feature-item,
+.main-footer {
+    transition:
+        background-color 0.4s ease,
+        color 0.4s ease,
+        border-color 0.4s ease,
+        box-shadow 0.4s ease;
+}
+
+/* Specifically for elements that might have their text or border color change */
+a,
+h1, h2, h3, h4, h5, h6,
+.logo a,
+.main-nav a,
+.feature-item h3,
+.footer-links a {
+    transition: color 0.4s ease;
+}

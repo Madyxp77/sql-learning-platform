@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix B: Glossary of SQL and Data Terms - The SQL Path</title>
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+    <!-- Main stylesheet for general layout and responsiveness -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Theme stylesheet for dark/light mode variables and transitions -->
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - Inter for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Specific styles for the glossary for better readability */
+        .glossary-list dt {
+            font-weight: 700;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-size: 1.15rem;
+        }
+
+        .glossary-list dd {
+            margin-bottom: 1rem;
+            padding-left: 1rem;
+            border-left: 3px solid var(--border-color);
+        }
+
+        .glossary-list dd:last-of-type {
+            margin-bottom: 0;
+        }
+
+        /* Responsive adjustments for glossary */
+        @media (max-width: 768px) {
+            .glossary-list dt {
+                font-size: 1.05rem;
+                margin-top: 1rem;
+            }
+            .glossary-list dd {
+                margin-bottom: 0.8rem;
+                padding-left: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../../index.html">The SQL Path</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../../index.html#chapters">Chapters</a></li>
+                    <li><a href="../../index.html#about">About</a></li>
+                    <li><a href="../../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon for theme toggle - will be set by JavaScript -->
+                    <span class="icon">💡</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="chapter-main">
+        <div class="container chapter-container">
+            <nav class="breadcrumbs">
+                <a href="../../index.html">Home</a> &gt; <a href="../../index.html#chapters">Chapters</a> &gt; <span>Appendix B</span>
+            </nav>
+
+            <h1 class="chapter-title">Appendix B: Glossary of SQL and Data Terms</h1>
+            <p class="chapter-intro">This glossary defines key terms and concepts related to SQL and data analysis. It serves as a handy reference to clarify terminology encountered throughout "The SQL Path."</p>
+
+            <section class="glossary-section">
+                <dl class="glossary-list">
+                    <dt>Aggregate Function</dt>
+                    <dd>A function that performs a calculation on a set of values (a column) and returns a single value. Common examples include COUNT(), SUM(), AVG(), MIN(), and MAX().</dd>
+
+                    <dt>Alias</dt>
+                    <dd>A temporary, alternative name given to a table or a column in a SQL query. Used to make column names more readable or to shorten table names for easier referencing, especially in JOINs.</dd>
+
+                    <dt>ASC</dt>
+                    <dd>Keyword used in the ORDER BY clause to sort results in ascending (A-Z, 0-9) order. This is the default sort order if not specified.</dd>
+
+                    <dt>AVG()</dt>
+                    <dd>An aggregate function that calculates the average value of a numeric column.</dd>
+
+                    <dt>BETWEEN</dt>
+                    <dd>A logical operator used in the WHERE clause to filter values within a specified range (inclusive).</dd>
+
+                    <dt>CASE Statement</dt>
+                    <dd>A conditional expression in SQL that allows you to define different outcomes based on various conditions, similar to 'if-then-else' logic in programming.</dd>
+
+                    <dt>Column</dt>
+                    <dd>A vertical entity in a table that contains all the data for a specific attribute. Also known as a field.</dd>
+
+                    <dt>Common Table Expression (CTE)</dt>
+                    <dd>A temporary, named result set that you can reference within a SELECT, INSERT, UPDATE, or DELETE statement. Defined with the WITH clause, CTEs improve query readability and modularity.</dd>
+
+                    <dt>COUNT()</dt>
+                    <dd>An aggregate function that returns the number of rows that match a specified criterion. `COUNT(*)` counts all rows, while `COUNT(column_name)` counts non-NULL values in a column.</dd>
+
+                    <dt>CRUD</dt>
+                    <dd>An acronym for Create, Read, Update, Delete. These are the four basic functions of persistent storage in database applications, corresponding to INSERT, SELECT, UPDATE, and DELETE SQL commands.</dd>
+
+                    <dt>Database</dt>
+                    <dd>An organized collection of structured information, or data, typically stored electronically in a computer system. It can be accessed, managed, modified, updated, controlled, and organized.</dd>
+
+                    <dt>Data Type</dt>
+                    <dd>A classification that specifies what kind of value a column can hold (e.g., INTEGER, TEXT, REAL, BOOLEAN, DATE, DATETIME).</dd>
+
+                    <dt>DDL (Data Definition Language)</dt>
+                    <dd>SQL commands used to define, modify, or drop database structures (tables, views, indexes). Examples: CREATE TABLE, ALTER TABLE, DROP TABLE.</dd>
+
+                    <dt>DML (Data Manipulation Language)</dt>
+                    <dd>SQL commands used to manage data within database objects. Examples: INSERT, UPDATE, DELETE, SELECT.</dd>
+
+                    <dt>DESC</dt>
+                    <dd>Keyword used in the ORDER BY clause to sort results in descending (Z-A, 9-0) order.</dd>
+
+                    <dt>DISTINCT</dt>
+                    <dd>Keyword used with SELECT to return only unique (non-duplicate) values in the specified column(s).</dd>
+
+                    <dt>Foreign Key (FK)</dt>
+                    <dd>A column or set of columns in one table that refers to the Primary Key in another table. It establishes a link between the two tables, enforcing referential integrity.</dd>
+
+                    <dt>FROM Clause</dt>
+                    <dd>Specifies the table(s) from which to retrieve data in a SELECT statement.</dd>
+
+                    <dt>GROUP BY Clause</dt>
+                    <dd>Used with aggregate functions to group rows that have the same values in specified columns into a summary row for each group.</dd>
+
+                    <dt>HAVING Clause</dt>
+                    <dd>Used with the GROUP BY clause to filter groups based on aggregate conditions. Similar to WHERE, but applies to groups, not individual rows.</dd>
+
+                    <dt>INNER JOIN</dt>
+                    <dd>Returns only the rows that have matching values in both tables being joined.</dd>
+
+                    <dt>INSERT INTO</dt>
+                    <dd>A DML command used to add new rows of data into a table.</dd>
+
+                    <dt>JOIN</dt>
+                    <dd>A SQL clause used to combine rows from two or more tables, based on a related column between them.</dd>
+
+                    <dt>LAG()</dt>
+                    <dd>A window function that accesses a row at a given physical offset before the current row within a partition. Useful for comparing a row's value to a previous row's value.</dd>
+
+                    <dt>LEFT JOIN (LEFT OUTER JOIN)</dt>
+                    <dd>Returns all rows from the left table, and the matching rows from the right table. If there is no match, NULLs are returned for columns from the right table.</dd>
+
+                    <dt>LIMIT Clause</dt>
+                    <dd>Used to constrain the number of rows returned by a query. Common in MySQL, SQLite, and PostgreSQL.</dd>
+
+                    <dt>LIKE Operator</dt>
+                    <dd>Used in the WHERE clause to search for a specified pattern in a column. Often used with wildcard characters (% for zero or more characters, _ for a single character).</dd>
+
+                    <dt>MAX()</dt>
+                    <dd>An aggregate function that returns the maximum value in a column.</dd>
+
+                    <dt>MIN()</dt>
+                    <dd>An aggregate function that returns the minimum value in a column.</dd>
+
+                    <dt>NULL</dt>
+                    <dd>A marker indicating that a data value does not exist in the database. It is not equivalent to zero, an empty string, or false.</dd>
+
+                    <dt>ORDER BY Clause</dt>
+                    <dd>Used to sort the result-set of a query in ascending (ASC) or descending (DESC) order.</dd>
+
+                    <dt>Primary Key (PK)</dt>
+                    <dd>A column or set of columns in a table that uniquely identifies each row in that table. It must contain unique values and cannot contain NULL values.</dd>
+
+                    <dt>Query</dt>
+                    <dd>A request for data or information from a database. Usually refers to a SELECT statement.</dd>
+
+                    <dt>RANK()</dt>
+                    <dd>A window function that assigns a unique rank to each row within its partition based on the order specified. If rows have identical values, they receive the same rank, and the next rank is skipped (e.g., 1, 1, 3).</dd>
+
+                    <dt>Relational Database</dt>
+                    <dd>A type of database that stores and provides access to data points that are related to one another. Relational databases are based on the relational model, which organizes data into tables (relations).</dd>
+
+                    <dt>ROW_NUMBER()</dt>
+                    <dd>A window function that assigns a unique, sequential integer to each row within its partition, starting at 1 for the first row in each partition. It does not skip numbers for identical values.</dd>
+
+                    <dt>Row</dt>
+                    <dd>A horizontal entity in a table representing a single record or entry. Also known as a record or tuple.</dd>
+
+                    <dt>Schema</dt>
+                    <dd>The logical design of a database, including table names, column names, data types, relationships between tables, and constraints.</dd>
+
+                    <dt>SELECT Statement</dt>
+                    <dd>The most common SQL DML command, used to retrieve data from one or more tables in a database.</dd>
+
+                    <dt>SQL (Structured Query Language)</dt>
+                    <dd>A standard language for storing, manipulating, and retrieving data in relational databases.</dd>
+
+                    <dt>SQLite</dt>
+                    <dd>A C-language library that implements a small, fast, self-contained, high-reliability, full-featured, SQL database engine. It is the most widely deployed database engine in the world.</dd>
+
+                    <dt>Subquery</dt>
+                    <dd>A query (SELECT statement) nested inside another SQL query. It can return a single value, a single row, a single column, or a table.</dd>
+
+                    <dt>SUM()</dt>
+                    <dd>An aggregate function that calculates the sum of all values in a numeric column.</dd>
+
+                    <dt>Table</dt>
+                    <dd>A collection of related data held in a structured format within a database. It consists of columns and rows.</dd>
+
+                    <dt>UNION</dt>
+                    <dd>A set operator that combines the result-set of two or more SELECT statements into a single result-set. Each SELECT statement must have the same number of columns and compatible data types.</dd>
+
+                    <dt>UPDATE</dt>
+                    <dd>A DML command used to modify existing records in a table.</dd>
+
+                    <dt>WHERE Clause</dt>
+                    <dd>Used to filter records based on specified conditions. It appears after the FROM clause and before GROUP BY or ORDER BY.</dd>
+
+                    <dt>Window Function</dt>
+                    <dd>A function that performs a calculation across a set of table rows that are somehow related to the current row. Unlike aggregate functions, window functions do not group rows into a single output row; they retain individual rows.</dd>
+                </dl>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> The SQL Path. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript file -->
+    <script type="module" src="../../assets/js/main.js"></script>
+</body>
+</html>

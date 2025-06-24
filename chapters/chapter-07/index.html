@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 7: Common Table Expressions (CTEs) - The SQL Path</title>
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+    <!-- Main stylesheet for general layout and responsiveness -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Theme stylesheet for dark/light mode variables and transitions -->
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - Inter for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Chapter-specific styles for better content presentation (replicated from previous chapters for consistency) */
+        .chapter-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .breadcrumbs {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--nav-link-color);
+        }
+
+        .breadcrumbs a {
+            color: var(--nav-link-color);
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .chapter-title {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-intro {
+            font-size: 1.15rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            max-width: 850px;
+            line-height: 1.7;
+        }
+
+        .chapter-section {
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+        }
+
+        .chapter-section h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .chapter-section h3 {
+            font-size: 1.6rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-section p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .code-block-container {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            background-color: var(--code-bg-color);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--code-border-color);
+            overflow: hidden;
+        }
+
+        .code-editor {
+            height: 200px; /* Default height for the Monaco editor */
+            width: 100%;
+            border-bottom: 1px solid var(--code-border-color);
+        }
+
+        .editor-actions {
+            padding: 0.8rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .query-results {
+            background-color: var(--content-bg-color);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            min-height: 50px;
+            max-height: 300px;
+            overflow: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            border-bottom-left-radius: var(--border-radius-md);
+            border-bottom-right-radius: var(--border-radius-md);
+        }
+
+        .query-results table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        .query-results th, .query-results td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .query-results th {
+            background-color: var(--primary-color);
+            color: var(--button-text-color);
+            font-weight: 600;
+        }
+
+        .exercise-section {
+            margin-top: 3rem;
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+        }
+
+        .exercise-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            background-color: var(--background-color); /* Lighter background for exercises */
+        }
+
+        .exercise-item h3 {
+            margin-top: 0;
+            color: var(--heading-color);
+            font-size: 1.3rem;
+        }
+
+        .exercise-item p {
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chapter-title {
+                font-size: 2rem;
+            }
+            .chapter-intro {
+                font-size: 1rem;
+            }
+            .chapter-section {
+                padding: 1.5rem;
+            }
+            .chapter-section h2 {
+                font-size: 1.8rem;
+            }
+            .chapter-section h3 {
+                font-size: 1.4rem;
+            }
+            .editor-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .editor-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../../index.html">The SQL Path</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../../index.html#chapters">Chapters</a></li>
+                    <li><a href="../../index.html#about">About</a></li>
+                    <li><a href="../../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon for theme toggle - will be set by JavaScript -->
+                    <span class="icon">💡</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="chapter-main">
+        <div class="container chapter-container">
+            <nav class="breadcrumbs">
+                <a href="../../index.html">Home</a> &gt; <a href="../../index.html#chapters">Chapters</a> &gt; <span>Chapter 7</span>
+            </nav>
+
+            <h1 class="chapter-title">Chapter 7: Organizing Complex Queries – Common Table Expressions (CTEs)</h1>
+            <p class="chapter-intro">As your SQL queries become more complex, especially with multiple subqueries or self-joins, they can become difficult to read and manage. Common Table Expressions (CTEs), introduced with the `WITH` clause, provide a way to define a temporary, named result set that you can reference within a `SELECT`, `INSERT`, `UPDATE`, or `DELETE` statement. They make complex queries more readable, maintainable, and often, more efficient.</p>
+
+            <section class="chapter-section">
+                <h2>7.1 Introduction to CTEs and Basic Syntax</h2>
+                <p>Think of a CTE as a temporary, virtual table that exists only for the duration of a single query. It's defined using the `WITH` clause, followed by a name for the CTE, and then the SQL query that defines the CTE's content.</p>
+                <h3>Basic CTE Syntax:</h3>
+                <pre><code class="language-sql">WITH CteName AS (
+    -- Your SELECT statement that defines the CTE
+    SELECT column1, column2
+    FROM your_table
+    WHERE condition
+)
+-- Your main query that references the CTE
+SELECT *
+FROM CteName
+WHERE another_condition;</code></pre>
+                <p>Let's use a CTE to first select all 'Completed' orders, and then count them.</p>
+                <div class="code-block-container">
+                    <div id="editor-7-1" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-7-1">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-7-1">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>This is a simple example. Without a CTE, you'd use a subquery in the `FROM` clause. The CTE makes it more declarative and readable.</p>
+                <p>Now, let's get the names and prices of products in the 'Electronics' category using a CTE, and then filter those results to only include products over $100.</p>
+                <div class="code-block-container">
+                    <div id="editor-7-2" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-7-2">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-7-2">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>7.2 Using Multiple CTEs</h2>
+                <p>You can define multiple CTEs within a single `WITH` clause, separated by commas. Subsequent CTEs can refer to previously defined CTEs within the same `WITH` block. This allows you to break down very complex problems into logical, sequential steps.</p>
+                <h3>Syntax for Multiple CTEs:</h3>
+                <pre><code class="language-sql">WITH CteName1 AS (
+    SELECT ...
+),
+CteName2 AS (
+    SELECT ... FROM CteName1 ...
+),
+CteName3 AS (
+    SELECT ... FROM CteName2 ...
+)
+SELECT ... FROM CteName3 ...;</code></pre>
+                <p>Let's calculate the total sales per customer and then find the average of those total sales. This requires two steps: one to aggregate sales per customer, and another to average those aggregated results.</p>
+                <div class="code-block-container">
+                    <div id="editor-7-3" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-7-3">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-7-3">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>This example demonstrates how `CustomerTotals` is defined first, and then `AverageOverall` references `CustomerTotals`. The final `SELECT` statement then retrieves from `AverageOverall`.</p>
+            </section>
+
+            <section class="chapter-section">
+                <h2>7.3 CTEs with `JOIN`s and Aggregations</h2>
+                <p>CTEs are incredibly versatile and can contain complex logic, including `JOIN`s and aggregations. This allows you to prepare specific datasets before performing your final analysis.</p>
+                <p>Let's find the total quantity of each product ordered, and then display the `product_name` and the calculated `total_ordered_quantity` for products that have been ordered more than 100 units in total.</p>
+                <div class="code-block-container">
+                    <div id="editor-7-4" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-7-4">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-7-4">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>This query first aggregates quantities per product using a `JOIN` and `GROUP BY` within the `ProductOrderSummary` CTE, and then the outer query filters those summaries. This is often much more readable than a deeply nested subquery.</p>
+            </section>
+
+            <section class="exercise-section">
+                <h2>Chapter 7 Exercises</h2>
+                <p>Practice writing clean and powerful queries using Common Table Expressions.</p>
+
+                <div class="exercise-item" data-exercise-id="chapter-07-exercise-7-1">
+                    <h3>Exercise 7.1: Top Spenders by Country</h3>
+                    <p>Using CTEs, first identify the total amount spent by each customer. Then, find the `first_name`, `last_name`, `country`, and `total_spent` for customers who have spent more than $200 AND are from 'USA' or 'Canada'. Order results by `total_spent` descending.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-7-1" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-7-1">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-07-exercise-7-1">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-7-1">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-07-exercise-7-2">
+                    <h3>Exercise 7.2: Products in High-Demand Categories</h3>
+                    <p>A "high-demand" category is one where the total `stock_quantity` of all products in that category is less than 200. Using a CTE, first identify these high-demand categories. Then, select all columns for products belonging to these high-demand categories. Order by category and product name.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-7-2" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-7-2">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-07-exercise-7-2">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-7-2">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-07-exercise-7-3">
+                    <h3>Exercise 7.3: Customer Order Averages by Status</h3>
+                    <p>Using multiple CTEs, first calculate the average `total_amount` for each order `status` (e.g., 'Completed', 'Pending', 'Shipped'). In a second CTE, find statuses where this average order amount is greater than $100. Finally, display the `status` and `avg_amount` for these filtered statuses.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-7-3" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-7-3">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-07-exercise-7-3">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-7-3">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> The SQL Path. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global scripts: main.js handles theme toggle, etc. -->
+    <script type="module" src="../../assets/js/main.js"></script>
+
+    <!-- Chapter-specific scripts for SQL Editor and Database interaction -->
+    <script type="module">
+        import { loadMonacoEditor, initializeMonacoEditor, getEditorContent, setEditorContent } from '../../assets/js/code-editor.js';
+        import { initializeDatabase, executeSql } from '../../assets/js/sql-engine.js';
+        import { setExerciseCompleted, isExerciseCompleted } from '../../assets/js/progress-tracking.js';
+        import { getElementById, createElement, emptyElement } from '../../assets/js/utils.js';
+
+        // Initial SQL content for the demonstration editors
+        const initialQuery7_1 = `WITH CompletedOrders AS (
+    SELECT order_id, total_amount
+    FROM Orders
+    WHERE status = 'Completed'
+)
+SELECT COUNT(order_id) AS total_completed_orders
+FROM CompletedOrders;`;
+        const initialQuery7_2 = `WITH ElectronicsProducts AS (
+    SELECT product_name, price, category
+    FROM Products
+    WHERE category = 'Electronics'
+)
+SELECT product_name, price
+FROM ElectronicsProducts
+WHERE price > 100
+ORDER BY price DESC;`;
+        const initialQuery7_3 = `WITH CustomerTotals AS (
+    SELECT customer_id, SUM(total_amount) AS total_spent
+    FROM Orders
+    GROUP BY customer_id
+),
+AverageOverall AS (
+    SELECT AVG(total_amount) AS avg_total_order_amount
+    FROM Orders
+)
+SELECT ct.customer_id, ct.total_spent
+FROM CustomerTotals ct, AverageOverall ao
+WHERE ct.total_spent > ao.avg_total_order_amount
+ORDER BY ct.total_spent DESC;`;
+        const initialQuery7_4 = `WITH ProductOrderSummary AS (
+    SELECT p.product_name, SUM(oi.quantity) AS total_ordered_quantity
+    FROM Products p
+    INNER JOIN OrderItems oi ON p.product_id = oi.product_id
+    GROUP BY p.product_name
+)
+SELECT product_name, total_ordered_quantity
+FROM ProductOrderSummary
+WHERE total_ordered_quantity > 100
+ORDER BY total_ordered_quantity DESC;`;
+
+
+        // Initial SQL content for exercises
+        const initialExercise7_1 = `WITH CustomerSpending AS (
+    SELECT customer_id, SUM(total_amount) AS total_spent
+    FROM Orders
+    GROUP BY customer_id
+)
+SELECT c.first_name, c.last_name, c.country, cs.total_spent
+FROM Customers c
+JOIN CustomerSpending cs ON c.customer_id = cs.customer_id
+WHERE cs.total_spent > 200 AND (c.country = 'USA' OR c.country = 'Canada')
+ORDER BY cs.total_spent DESC;`;
+        const initialExercise7_2 = `WITH HighDemandCategories AS (
+    SELECT category
+    FROM Products
+    GROUP BY category
+    HAVING SUM(stock_quantity) < 200
+)
+SELECT p.*
+FROM Products p
+INNER JOIN HighDemandCategories hdc ON p.category = hdc.category
+ORDER BY p.category ASC, p.product_name ASC;`;
+        const initialExercise7_3 = `WITH AvgStatusAmount AS (
+    SELECT status, AVG(total_amount) AS avg_amount_by_status
+    FROM Orders
+    GROUP BY status
+)
+SELECT status, avg_amount_by_status
+FROM AvgStatusAmount
+WHERE avg_amount_by_status > 100
+ORDER BY status ASC;`;
+
+
+        // Keep track of editors
+        const editors = {};
+
+        /**
+         * Renders query results in a table format.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function renderResults(resultsContainer, columns, rows) {
+            emptyElement(resultsContainer); // Clear previous results
+
+            if (!columns || columns.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No columns returned.' }));
+                return;
+            }
+            if (!rows || rows.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No rows returned.' }));
+                return;
+            }
+
+            const table = createElement('table');
+            const thead = createElement('thead');
+            const tbody = createElement('tbody');
+
+            // Create table header
+            const headerRow = createElement('tr');
+            columns.forEach(col => {
+                headerRow.appendChild(createElement('th', { textContent: col }));
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            rows.forEach(rowData => {
+                const row = createElement('tr');
+                rowData.forEach(cellData => {
+                    row.appendChild(createElement('td', { textContent: cellData === null ? 'NULL' : cellData.toString() }));
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            resultsContainer.appendChild(table);
+        }
+
+        /**
+         * Displays a message in the results container.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function displayMessage(resultsContainer, message, isError = false) {
+            emptyElement(resultsContainer);
+            const p = createElement('p', { textContent: message });
+            if (isError) {
+                p.style.color = 'var(--primary-color)';
+                p.style.fontWeight = 'bold';
+            }
+            resultsContainer.appendChild(p);
+        }
+
+        /**
+         * Handles the execution of a SQL query from an editor.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        async function handleRunQuery(editorId, resultsId) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+
+            if (!editor || !resultsContainer) {
+                console.error(`Editor (${editorId}) or results container (${resultsId}) not found.`);
+                return;
+            }
+
+            const query = editor.getValue();
+            if (!query.trim()) {
+                displayMessage(resultsContainer, 'Please enter a SQL query to execute.', true);
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Executing query...', false);
+
+            try {
+                const result = executeSql(query);
+
+                if (result.error) {
+                    displayMessage(resultsContainer, `Error: ${result.error}`, true);
+                } else if (result.isSelect) {
+                    renderResults(resultsContainer, result.columns, result.rows);
+                } else {
+                    displayMessage(resultsContainer, result.message || 'Command executed successfully.', false);
+                }
+            } catch (e) {
+                console.error('Unexpected error during query execution:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred: ${e.message}`, true);
+            }
+        }
+
+        /**
+         * Initializes an individual editor and sets up its run button.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorAndRunButton(editorId, initialContent, resultsId) {
+            const editorDiv = getElementById(editorId);
+            if (editorDiv) {
+                editors[editorId] = initializeMonacoEditor(editorId, initialContent, document.documentElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light');
+
+                const runButton = document.querySelector(`button.run-query-btn[data-editor-id="${editorId}"]`);
+                if (runButton) {
+                    runButton.addEventListener('click', () => handleRunQuery(editorId, resultsId));
+                }
+            }
+        }
+
+        /**
+         * Sets up the theme change listener for all editors.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorThemeListener() {
+            const htmlElement = document.documentElement;
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                        const newTheme = htmlElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light';
+                        for (const editorId in editors) {
+                            if (editors[editorId]) {
+                                editors[editorId].updateOptions({ theme: newTheme });
+                            }
+                        }
+                    }
+                });
+            });
+            observer.observe(htmlElement, { attributes: true });
+        }
+
+        /**
+         * Compares two 2D arrays (results from SQL queries).
+         * This version is robust by sorting both columns and rows for comparison.
+         * @param {Array<string>} userColumns User's query columns.
+         * @param {Array<Array<any>>} userRows User's query rows.
+         * @param {Array<string>} expectedColumns Expected query columns.
+         * @param {Array<Array<any>>} expectedRows Expected query rows.
+         * @returns {boolean} True if results match, false otherwise.
+         */
+        function compareQueryResults(userColumns, userRows, expectedColumns, expectedRows) {
+            // Compare column names (order-independent)
+            const sortedUserCols = [...userColumns].sort();
+            const sortedExpectedCols = [...expectedColumns].sort();
+            if (JSON.stringify(sortedUserCols) !== JSON.stringify(sortedExpectedCols)) {
+                console.log("Column names mismatch or order different.");
+                return false;
+            }
+
+            // Check row count
+            if (userRows.length !== expectedRows.length) {
+                console.log(`Row count mismatch. Expected ${expectedRows.length}, got ${userRows.length}.`);
+                return false;
+            }
+
+            // Sort rows based on a consistent serialization for robust comparison,
+            // as row order might not be guaranteed without explicit ORDER BY.
+            // Also ensure cell data is consistently stringified, with NULL handling.
+            const serializeRow = (row) => JSON.stringify(row.map(cell => (cell === null ? 'NULL' : String(cell))));
+            const sortedUserRowStrings = userRows.map(serializeRow).sort();
+            const sortedExpectedRowStrings = expectedRows.map(serializeRow).sort();
+
+            if (JSON.stringify(sortedUserRowStrings) !== JSON.stringify(sortedExpectedRowStrings)) {
+                console.log("Row data mismatch or order different (after internal sort).");
+                return false;
+            }
+
+            return true;
+        }
+
+
+        /**
+         * Handles the "Check Answer" functionality for exercises.
+         * @param {string} exerciseId The unique ID of the exercise.
+         * @param {string} editorId The ID of the associated editor.
+         * @param {string} resultsId The ID of the associated results container.
+         * @param {string} expectedQuery The correct SQL query for validation.
+         * @param {boolean} [requiresSelect=true] If true, validates only SELECT queries.
+         */
+        async function handleCheckAnswer(exerciseId, editorId, resultsId, expectedQuery, requiresSelect = true) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+            const exerciseItemElement = getElementById(exerciseId);
+
+            if (!editor || !resultsContainer || !exerciseItemElement) {
+                console.error(`Elements for exercise check not found: Editor(${editorId}), Results(${resultsId}), Item(${exerciseId}).`);
+                return;
+            }
+
+            const userQuery = editor.getValue();
+            if (!userQuery.trim()) {
+                displayMessage(resultsContainer, 'Please write your query before checking the answer.', true);
+                setExerciseCompleted(exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Checking your answer...', false);
+
+            try {
+                const userResult = executeSql(userQuery);
+
+                if (userResult.error) {
+                    displayMessage(resultsContainer, `Your query has an error: ${userResult.error}`, true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                if (requiresSelect && !userResult.isSelect) {
+                    displayMessage(resultsContainer, 'Please provide a SELECT query to check your answer.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                const expectedResult = executeSql(expectedQuery);
+
+                if (expectedResult.error) {
+                    console.error('Error in expected query for exercise validation:', expectedResult.error);
+                    displayMessage(resultsContainer, 'An internal error occurred while validating the exercise. Please try again later.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                let isCorrect = false;
+                if (requiresSelect) {
+                    isCorrect = compareQueryResults(userResult.columns, userResult.rows, expectedResult.columns, expectedResult.rows);
+                } else {
+                    isCorrect = !userResult.error;
+                }
+
+                if (isCorrect) {
+                    displayMessage(resultsContainer, '🎉 Correct! Well done!', false);
+                    setExerciseCompleted('chapter-07', exerciseId, true); // Mark as completed for chapter 07
+                    exerciseItemElement.style.border = '2px solid var(--primary-color)'; // Visual feedback
+                } else {
+                    displayMessage(resultsContainer, '❌ Incorrect. Review your query and try again.', true);
+                    setExerciseCompleted('chapter-07', exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)'; // Reset border
+                }
+
+                renderResults(resultsContainer, userResult.columns, userResult.rows);
+
+            } catch (e) {
+                console.error('Error during exercise check:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred during check: ${e.message}`, true);
+                setExerciseCompleted('chapter-07', exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+            }
+        }
+
+
+        // DOM Content Loaded Handler
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Chapter 7: DOM Content Loaded.');
+
+            // Initialize the database for this chapter
+            try {
+                await initializeDatabase();
+            } catch (e) {
+                console.error("Failed to initialize database for Chapter 7:", e);
+                displayMessage(getElementById('results-7-1'), `Failed to load database: ${e.message}. Interactive exercises might not work.`, true);
+                return;
+            }
+
+            // Load Monaco Editor
+            try {
+                await loadMonacoEditor();
+            } catch (e) {
+                console.error("Failed to load Monaco Editor for Chapter 7:", e);
+                displayMessage(getElementById('results-7-1'), `Failed to load code editor: ${e.message}. Code interaction will not work.`, true);
+                return;
+            }
+
+            // Set up demonstration editors
+            setupEditorAndRunButton('editor-7-1', initialQuery7_1, 'results-7-1');
+            setupEditorAndRunButton('editor-7-2', initialQuery7_2, 'results-7-2');
+            setupEditorAndRunButton('editor-7-3', initialQuery7_3, 'results-7-3');
+            setupEditorAndRunButton('editor-7-4', initialQuery7_4, 'results-7-4');
+
+
+            // Set up exercise editors and their check buttons
+            setupEditorAndRunButton('exercise-editor-7-1', initialExercise7_1, 'exercise-results-7-1');
+            const checkBtn7_1 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-07-exercise-7-1"]');
+            if (checkBtn7_1) {
+                checkBtn7_1.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-07-exercise-7-1',
+                    'exercise-editor-7-1',
+                    'exercise-results-7-1',
+                    `WITH CustomerSpending AS (
+    SELECT customer_id, SUM(total_amount) AS total_spent
+    FROM Orders
+    GROUP BY customer_id
+)
+SELECT c.first_name, c.last_name, c.country, cs.total_spent
+FROM Customers c
+JOIN CustomerSpending cs ON c.customer_id = cs.customer_id
+WHERE cs.total_spent > 200 AND (c.country = 'USA' OR c.country = 'Canada')
+ORDER BY cs.total_spent DESC, c.customer_id ASC;` // Added ORDER BY for consistent comparison
+                ));
+                if (isExerciseCompleted('chapter-07', 'chapter-07-exercise-7-1')) {
+                    getElementById('chapter-07-exercise-7-1').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-7-2', initialExercise7_2, 'exercise-results-7-2');
+            const checkBtn7_2 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-07-exercise-7-2"]');
+            if (checkBtn7_2) {
+                checkBtn7_2.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-07-exercise-7-2',
+                    'exercise-editor-7-2',
+                    'exercise-results-7-2',
+                    `WITH HighDemandCategories AS (
+    SELECT category
+    FROM Products
+    GROUP BY category
+    HAVING SUM(stock_quantity) < 200
+)
+SELECT p.product_id, p.product_name, p.category, p.price, p.stock_quantity
+FROM Products p
+INNER JOIN HighDemandCategories hdc ON p.category = hdc.category
+ORDER BY p.category ASC, p.product_name ASC;` // Added explicit columns and ORDER BY for consistency
+                ));
+                 if (isExerciseCompleted('chapter-07', 'chapter-07-exercise-7-2')) {
+                    getElementById('chapter-07-exercise-7-2').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-7-3', initialExercise7_3, 'exercise-results-7-3');
+            const checkBtn7_3 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-07-exercise-7-3"]');
+            if (checkBtn7_3) {
+                checkBtn7_3.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-07-exercise-7-3',
+                    'exercise-editor-7-3',
+                    'exercise-results-7-3',
+                    `WITH AvgStatusAmount AS (
+    SELECT status, AVG(total_amount) AS avg_amount_by_status
+    FROM Orders
+    GROUP BY status
+)
+SELECT status, avg_amount_by_status
+FROM AvgStatusAmount
+WHERE avg_amount_by_status > 100
+ORDER BY status ASC;` // Added ORDER BY for consistent comparison
+                ));
+                 if (isExerciseCompleted('chapter-07', 'chapter-07-exercise-7-3')) {
+                    getElementById('chapter-07-exercise-7-3').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+
+            setupEditorThemeListener();
+        });
+
+        // Ensure editors resize when window resizes
+        window.addEventListener('resize', () => {
+            for (const editorId in editors) {
+                if (editors[editorId]) {
+                    editors[editorId].layout();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

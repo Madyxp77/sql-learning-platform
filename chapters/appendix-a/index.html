@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appendix A: SQL Cheat Sheet - The SQL Path</title>
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+    <!-- Main stylesheet for general layout and responsiveness -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Theme stylesheet for dark/light mode variables and transitions -->
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - Inter for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../../index.html">The SQL Path</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../../index.html#chapters">Chapters</a></li>
+                    <li><a href="../../index.html#about">About</a></li>
+                    <li><a href="../../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon for theme toggle - will be set by JavaScript -->
+                    <span class="icon">💡</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="chapter-main">
+        <div class="container chapter-container">
+            <nav class="breadcrumbs">
+                <a href="../../index.html">Home</a> &gt; <a href="../../index.html#chapters">Chapters</a> &gt; <span>Appendix A</span>
+            </nav>
+
+            <h1 class="chapter-title">Appendix A: SQL Cheat Sheet for Data Analysts</h1>
+            <p class="chapter-intro">This cheat sheet provides a quick reference for common SQL commands and concepts covered in "The SQL Path." Keep it handy as you practice and analyze data!</p>
+
+            <section class="cheat-sheet-section">
+                <h2>1. Basic Data Retrieval</h2>
+                <div class="code-example">
+                    <h3>SELECT Statement</h3>
+                    <p>Retrieve data from tables.</p>
+                    <pre><code class="language-sql">SELECT column1, column2 FROM table_name;
+SELECT * FROM table_name; -- Select all columns
+SELECT DISTINCT column1 FROM table_name; -- Select unique values</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>Filtering Data (WHERE Clause)</h3>
+                    <p>Filter rows based on specified conditions.</p>
+                    <pre><code class="language-sql">SELECT column1 FROM table_name WHERE condition;
+
+-- Examples:
+SELECT * FROM Customers WHERE country = 'USA';
+SELECT * FROM Products WHERE price > 100 AND category = 'Electronics';
+SELECT * FROM Orders WHERE order_date BETWEEN '2022-01-01' AND '2022-01-31';
+SELECT * FROM Products WHERE product_name LIKE '%Laptop%';
+SELECT * FROM Customers WHERE customer_id IN (1, 5, 10);
+SELECT * FROM Products WHERE stock_quantity IS NOT NULL;</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>Ordering Results (ORDER BY)</h3>
+                    <p>Sort the result set.</p>
+                    <pre><code class="language-sql">SELECT column1, column2 FROM table_name ORDER BY column1 ASC|DESC;
+
+-- Examples:
+SELECT * FROM Customers ORDER BY registration_date DESC;
+SELECT product_name, price FROM Products ORDER BY category ASC, price DESC;</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>Limiting Results (LIMIT / TOP)</h3>
+                    <p>Restrict the number of rows returned.</p>
+                    <pre><code class="language-sql">-- SQLite, MySQL, PostgreSQL
+SELECT * FROM table_name LIMIT 10;
+
+-- SQL Server
+SELECT TOP 10 * FROM table_name;</code></pre>
+                </div>
+            </section>
+
+            <section class="cheat-sheet-section">
+                <h2>2. Aggregation and Grouping</h2>
+                <div class="code-example">
+                    <h3>Aggregate Functions</h3>
+                    <p>Perform calculations on a set of rows.</p>
+                    <pre><code class="language-sql">COUNT(column) -- Number of rows
+SUM(column)   -- Sum of values
+AVG(column)   -- Average of values
+MIN(column)   -- Minimum value
+MAX(column)   -- Maximum value
+
+-- Example:
+SELECT COUNT(order_id) AS total_orders, SUM(total_amount) AS total_sales FROM Orders;</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>GROUP BY Clause</h3>
+                    <p>Group rows that have the same values in specified columns into a summary row.</p>
+                    <pre><code class="language-sql">SELECT column1, AGGREGATE_FUNCTION(column2) FROM table_name GROUP BY column1;
+
+-- Example:
+SELECT category, AVG(price) AS avg_price FROM Products GROUP BY category;</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>HAVING Clause</h3>
+                    <p>Filter groups based on aggregate conditions.</p>
+                    <pre><code class="language-sql">SELECT column1, COUNT(column2) FROM table_name GROUP BY column1 HAVING COUNT(column2) > 10;
+
+-- Example:
+SELECT customer_id, SUM(total_amount) AS total_spent
+FROM Orders
+GROUP BY customer_id
+HAVING SUM(total_amount) > 500;</code></pre>
+                </div>
+            </section>
+
+            <section class="cheat-sheet-section">
+                <h2>3. Joining Tables</h2>
+                <div class="code-example">
+                    <h3>INNER JOIN</h3>
+                    <p>Returns rows when there is a match in both tables.</p>
+                    <pre><code class="language-sql">SELECT c.first_name, o.order_id
+FROM Customers c
+INNER JOIN Orders o ON c.customer_id = o.customer_id;</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>LEFT JOIN (LEFT OUTER JOIN)</h3>
+                    <p>Returns all rows from the left table, and the matching rows from the right table. If there is no match, the right side will have NULLs.</p>
+                    <pre><code class="language-sql">SELECT c.first_name, o.order_id
+FROM Customers c
+LEFT JOIN Orders o ON c.customer_id = o.customer_id;</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>RIGHT JOIN (RIGHT OUTER JOIN)</h3>
+                    <p>Returns all rows from the right table, and the matching rows from the left table. If there is no match, the left side will have NULLs.</p>
+                    <pre><code class="language-sql">-- Example (conceptual, less common in SQLite directly without full outer join)
+-- SELECT o.order_id, c.first_name
+-- FROM Orders o
+-- RIGHT JOIN Customers c ON o.customer_id = c.customer_id;</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>FULL OUTER JOIN</h3>
+                    <p>Returns all rows when there is a match in one of the tables.</p>
+                    <pre><code class="language-sql">-- Example (conceptual, often simulated with UNION in SQLite/MySQL)
+-- SELECT c.customer_id, o.order_id
+-- FROM Customers c
+-- FULL OUTER JOIN Orders o ON c.customer_id = o.customer_id;</code></pre>
+                </div>
+            </section>
+
+            <section class="cheat-sheet-section">
+                <h2>4. Subqueries and CTEs</h2>
+                <div class="code-example">
+                    <h3>Subquery in WHERE Clause</h3>
+                    <p>Using a query within another query.</p>
+                    <pre><code class="language-sql">SELECT product_name, price
+FROM Products
+WHERE product_id IN (SELECT product_id FROM OrderItems WHERE quantity > 5);</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>Common Table Expressions (CTEs - WITH Clause)</h3>
+                    <p>Define a temporary named result set that you can reference within a SELECT, INSERT, UPDATE, or DELETE statement.</p>
+                    <pre><code class="language-sql">WITH CustomerOrders AS (
+    SELECT customer_id, COUNT(order_id) AS num_orders
+    FROM Orders
+    GROUP BY customer_id
+)
+SELECT c.first_name, co.num_orders
+FROM Customers c
+JOIN CustomerOrders co ON c.customer_id = co.customer_id
+WHERE co.num_orders > 2;</code></pre>
+                </div>
+            </section>
+
+            <section class="cheat-sheet-section">
+                <h2>5. Window Functions</h2>
+                <div class="code-example">
+                    <h3>RANK(), DENSE_RANK(), ROW_NUMBER()</h3>
+                    <p>Assign a rank or row number to each row within a partition of a result set.</p>
+                    <pre><code class="language-sql">SELECT
+    order_id,
+    customer_id,
+    total_amount,
+    RANK() OVER (PARTITION BY customer_id ORDER BY total_amount DESC) as rank_by_customer_spend,
+    ROW_NUMBER() OVER (ORDER BY order_date ASC) as overall_order_num
+FROM Orders;</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>LAG(), LEAD()</h3>
+                    <p>Access data from a previous or next row in the same result set without self-joining.</p>
+                    <pre><code class="language-sql">SELECT
+    order_id,
+    order_date,
+    total_amount,
+    LAG(total_amount, 1, 0) OVER (PARTITION BY customer_id ORDER BY order_date) as prev_order_amount
+FROM Orders;</code></pre>
+                </div>
+            </section>
+
+            <section class="cheat-sheet-section">
+                <h2>6. Conditional Logic (CASE)</h2>
+                <div class="code-example">
+                    <h3>CASE Statement</h3>
+                    <p>Evaluate conditions and return a value when the first condition is met.</p>
+                    <pre><code class="language-sql">SELECT
+    product_name,
+    price,
+    CASE
+        WHEN price &lt; 50 THEN 'Budget'
+        WHEN price BETWEEN 50 AND 200 THEN 'Mid-Range'
+        ELSE 'Premium'
+    END AS price_segment
+FROM Products;</code></pre>
+                </div>
+            </section>
+
+            <section class="cheat-sheet-section">
+                <h2>7. Data Modification Language (DML)</h2>
+                <div class="code-example">
+                    <h3>INSERT INTO</h3>
+                    <p>Add new rows to a table.</p>
+                    <pre><code class="language-sql">INSERT INTO Customers (first_name, last_name, email, registration_date, country)
+VALUES ('John', 'Doe', 'john.doe@example.com', '2023-01-01', 'USA');</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>UPDATE</h3>
+                    <p>Modify existing rows in a table.</p>
+                    <pre><code class="language-sql">UPDATE Products
+SET price = 1250.00
+WHERE product_id = 1;</code></pre>
+                </div>
+                <div class="code-example">
+                    <h3>DELETE FROM</h3>
+                    <p>Remove rows from a table.</p>
+                    <pre><code class="language-sql">DELETE FROM Customers WHERE customer_id = 100;
+DELETE FROM Orders WHERE status = 'Cancelled';</code></pre>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> The SQL Path. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Main JavaScript file -->
+    <script type="module" src="../../assets/js/main.js"></script>
+</body>
+</html>

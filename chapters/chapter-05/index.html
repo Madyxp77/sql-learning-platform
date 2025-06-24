@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 5: Connecting the Dots – JOINS - The SQL Path</title>
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+    <!-- Main stylesheet for general layout and responsiveness -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Theme stylesheet for dark/light mode variables and transitions -->
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - Inter for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Chapter-specific styles for better content presentation (replicated from previous chapters for consistency) */
+        .chapter-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .breadcrumbs {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--nav-link-color);
+        }
+
+        .breadcrumbs a {
+            color: var(--nav-link-color);
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .chapter-title {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-intro {
+            font-size: 1.15rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            max-width: 850px;
+            line-height: 1.7;
+        }
+
+        .chapter-section {
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+        }
+
+        .chapter-section h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .chapter-section h3 {
+            font-size: 1.6rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-section p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .code-block-container {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            background-color: var(--code-bg-color);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--code-border-color);
+            overflow: hidden;
+        }
+
+        .code-editor {
+            height: 200px; /* Default height for the Monaco editor */
+            width: 100%;
+            border-bottom: 1px solid var(--code-border-color);
+        }
+
+        .editor-actions {
+            padding: 0.8rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .query-results {
+            background-color: var(--content-bg-color);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            min-height: 50px;
+            max-height: 300px;
+            overflow: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            border-bottom-left-radius: var(--border-radius-md);
+            border-bottom-right-radius: var(--border-radius-md);
+        }
+
+        .query-results table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        .query-results th, .query-results td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .query-results th {
+            background-color: var(--primary-color);
+            color: var(--button-text-color);
+            font-weight: 600;
+        }
+
+        .exercise-section {
+            margin-top: 3rem;
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+        }
+
+        .exercise-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            background-color: var(--background-color); /* Lighter background for exercises */
+        }
+
+        .exercise-item h3 {
+            margin-top: 0;
+            color: var(--heading-color);
+            font-size: 1.3rem;
+        }
+
+        .exercise-item p {
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chapter-title {
+                font-size: 2rem;
+            }
+            .chapter-intro {
+                font-size: 1rem;
+            }
+            .chapter-section {
+                padding: 1.5rem;
+            }
+            .chapter-section h2 {
+                font-size: 1.8rem;
+            }
+            .chapter-section h3 {
+                font-size: 1.4rem;
+            }
+            .editor-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .editor-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../../index.html">The SQL Path</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../../index.html#chapters">Chapters</a></li>
+                    <li><a href="../../index.html#about">About</a></li>
+                    <li><a href="../../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon for theme toggle - will be set by JavaScript -->
+                    <span class="icon">💡</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="chapter-main">
+        <div class="container chapter-container">
+            <nav class="breadcrumbs">
+                <a href="../../index.html">Home</a> &gt; <a href="../../index.html#chapters">Chapters</a> &gt; <span>Chapter 5</span>
+            </nav>
+
+            <h1 class="chapter-title">Chapter 5: Connecting the Dots – `JOINS`</h1>
+            <p class="chapter-intro">So far, you've been working with data from single tables. But real-world data is rarely stored in one giant table. Instead, it's normalized across multiple related tables (e.g., customers in one table, their orders in another, and product details in yet another). To combine this related data into a single, comprehensive view, you need `JOIN`s. This chapter will teach you how to connect tables and retrieve meaningful combined information.</p>
+
+            <section class="chapter-section">
+                <h2>5.1 Understanding Table Relationships</h2>
+                <p>Before diving into `JOIN`s, it's crucial to understand how tables relate to each other. This is typically done through **Primary Keys (PK)** and **Foreign Keys (FK)**.</p>
+                <ul>
+                    <li><strong>Primary Key (PK):</strong> A column (or set of columns) that uniquely identifies each record in a table. For example, `customer_id` in the `Customers` table.</li>
+                    <li><strong>Foreign Key (FK):</strong> A column (or set of columns) in one table that refers to the Primary Key in another table. It establishes a link or relationship between the two tables. For example, `customer_id` in the `Orders` table is a foreign key referencing the `customer_id` primary key in the `Customers` table. Similarly, `product_id` in our `OrderItems` table (which links orders to products) is a foreign key referencing `product_id` in the `Products` table.</li>
+                </ul>
+                <p>Let's briefly look at the `customer_id` column in both `Customers` and `Orders` to see the link.</p>
+                <div class="code-block-container">
+                    <div id="editor-5-1" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-5-1">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-5-1">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>5.2 `INNER JOIN`: Finding Common Ground</h2>
+                <p>The `INNER JOIN` (or simply `JOIN`) is the most common type of join. It returns only the rows where there is a match in **both** tables based on the specified join condition. If a row in one table doesn't have a corresponding match in the other, it's excluded from the result.</p>
+                <p>The syntax for `INNER JOIN` is `SELECT columns FROM TableA INNER JOIN TableB ON TableA.common_column = TableB.common_column;`</p>
+                <p>Let's join the `Customers` table with the `Orders` table to see which customer placed which order.</p>
+                <div class="code-block-container">
+                    <div id="editor-5-2" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-5-2">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-5-2">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Notice that only customers who have placed orders are included in the result. If a customer hasn't placed any orders, they won't appear here.</p>
+                <p>Now, let's join `Orders` with `OrderItems` (the new table that links orders to products) to see the individual items within each order. We'll include the product details by also joining the `Products` table.</p>
+                <div class="code-block-container">
+                    <div id="editor-5-3" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-5-3">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-5-3">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>5.3 `LEFT JOIN` (LEFT OUTER JOIN): Including All from the Left</h2>
+                <p>The `LEFT JOIN` (or `LEFT OUTER JOIN`) returns **all rows from the left table**, and the matching rows from the right table. If there is no match in the right table, `NULL` values are returned for the columns from the right table.</p>
+                <p>This is useful when you want to see all records from one table, even if they don't have corresponding records in the other.</p>
+                <p>Let's find all customers and their orders, including customers who haven't placed any orders yet.</p>
+                <div class="code-block-container">
+                    <div id="editor-5-4" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-5-4">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-5-4">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Can you identify the customers who have not placed any orders from the results? They will have `NULL` values in the `order_id` and `total_amount` columns.</p>
+            </section>
+
+            <section class="chapter-section">
+                <h2>5.4 `RIGHT JOIN` (RIGHT OUTER JOIN): Including All from the Right</h2>
+                <p>The `RIGHT JOIN` (or `RIGHT OUTER JOIN`) is the opposite of `LEFT JOIN`. It returns **all rows from the right table**, and the matching rows from the left table. If there is no match in the left table, `NULL` values are returned for the columns from the left table.</p>
+                <p class="warning-note"><strong>Note for SQLite:</strong> SQLite does not directly support `RIGHT JOIN` or `FULL OUTER JOIN`. These operations often need to be simulated using combinations of `LEFT JOIN` and `UNION ALL` statements. For this learning platform, we'll show the conceptual query; keep in mind its direct applicability depends on your specific SQL environment (e.g., PostgreSQL, SQL Server, MySQL support it directly).</p>
+                <p>Conceptually, let's try to find all orders and the customers who placed them, including orders that might not have a matching customer (which shouldn't happen with our current data due to foreign key constraints, but is good for understanding).</p>
+                <div class="code-block-container">
+                    <div id="editor-5-5" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-5-5">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-5-5">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>5.5 `FULL OUTER JOIN`: The Full Picture</h2>
+                <p>A `FULL OUTER JOIN` returns **all rows from both tables**, with `NULL`s in places where the join condition is not met in either table. It's like combining the results of a `LEFT JOIN` and a `RIGHT JOIN`.</p>
+                <p class="warning-note"><strong>Note for SQLite:</strong> Similar to `RIGHT JOIN`, SQLite does not directly support `FULL OUTER JOIN`. It is typically achieved by combining `LEFT JOIN` and `RIGHT JOIN` (or a `LEFT JOIN` with `UNION ALL` and a `LEFT JOIN` that excludes matches).</p>
+                <p>Conceptually, let's imagine we want to see all customers and all orders, even if they don't have a match in the other table. (Given our current data, every order has a customer, and most customers have orders, so it might not produce much difference from a LEFT JOIN if all customers have orders. It would primarily show customers with no orders and orders with no customers if such data existed).</p>
+                <div class="code-block-container">
+                    <div id="editor-5-6" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-5-6">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-5-6">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>5.6 Self-Joins</h2>
+                <p>A `SELF JOIN` is a regular join (usually `INNER JOIN` or `LEFT JOIN`) where a table is joined with itself. This is useful when you need to compare rows within the same table. This typically happens when a table has a hierarchical structure, like an `Employees` table where an `employee_id` and a `manager_id` (referencing another `employee_id`) exist.</p>
+                <p>While our Databites database doesn't have a direct hierarchical relationship like that, let's explore a conceptual example: finding products that are in the same category but have different prices. This helps you identify price variations within a product group.</p>
+                <div class="code-block-container">
+                    <div id="editor-5-7" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-5-7">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-5-7">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="exercise-section">
+                <h2>Chapter 5 Exercises</h2>
+                <p>Practice combining data from multiple tables using various `JOIN` types.</p>
+
+                <div class="exercise-item" data-exercise-id="chapter-05-exercise-5-1">
+                    <h3>Exercise 5.1: Customer Order Summary</h3>
+                    <p>Combine data from the `Customers` and `Orders` tables. Select the `customer_id`, `first_name`, `last_name` from `Customers`, and `order_id`, `total_amount`, `order_date` from `Orders`. Display only customers who have placed at least one order. Order the results by `customer_id` and then by `order_date`.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-5-1" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-5-1">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-05-exercise-5-1">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-5-1">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-05-exercise-5-2">
+                    <h3>Exercise 5.2: All Customers and Their Orders (If Any)</h3>
+                    <p>Retrieve all customers, showing their `customer_id`, `first_name`, and `last_name`. For each customer, include their `order_id` and `total_amount` if they have placed any orders. If a customer has no orders, their order-related columns should show `NULL`. Order the results by `customer_id`.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-5-2" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-5-2">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-05-exercise-5-2">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-5-2">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-05-exercise-5-3">
+                    <h3>Exercise 5.3: Product Sales Details</h3>
+                    <p>Join `Orders`, `OrderItems`, and `Products` tables. For each order item, display the `order_id`, `product_name`, `category`, `quantity`, and `item_price` (from `OrderItems`). Order the results by `order_id` and then `product_name`.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-5-3" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-5-3">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-05-exercise-5-3">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-5-3">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-05-exercise-5-4">
+                    <h3>Exercise 5.4: Products Never Ordered (Advanced)</h3>
+                    <p>Find the `product_id` and `product_name` of all products that have never been included in any order. (Hint: This typically requires a `LEFT JOIN` and filtering for `NULL` values on the right side of the join.)</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-5-4" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-5-4">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-05-exercise-5-4">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-5-4">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> The SQL Path. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global scripts: main.js handles theme toggle, etc. -->
+    <script type="module" src="../../assets/js/main.js"></script>
+
+    <!-- Chapter-specific scripts for SQL Editor and Database interaction -->
+    <script type="module">
+        import { loadMonacoEditor, initializeMonacoEditor, getEditorContent, setEditorContent } from '../../assets/js/code-editor.js';
+        import { initializeDatabase, executeSql } from '../../assets/js/sql-engine.js';
+        import { setExerciseCompleted, isExerciseCompleted } from '../../assets/js/progress-tracking.js';
+        import { getElementById, createElement, emptyElement } from '../../assets/js/utils.js';
+
+        // Initial SQL content for the demonstration editors
+        const initialQuery5_1 = `SELECT c.customer_id, c.first_name, o.order_id, o.total_amount FROM Customers c, Orders o LIMIT 5; -- Basic look at related IDs`;
+        const initialQuery5_2 = `SELECT c.first_name, c.last_name, o.order_id, o.order_date, o.total_amount
+FROM Customers c
+INNER JOIN Orders o ON c.customer_id = o.customer_id;`;
+        const initialQuery5_3 = `SELECT o.order_id, p.product_name, oi.quantity, oi.item_price
+FROM Orders o
+INNER JOIN OrderItems oi ON o.order_id = oi.order_id
+INNER JOIN Products p ON oi.product_id = p.product_id
+ORDER BY o.order_id, p.product_name;`; // Ordered for consistent results
+        const initialQuery5_4 = `SELECT c.first_name, c.last_name, o.order_id, o.total_amount
+FROM Customers c
+LEFT JOIN Orders o ON c.customer_id = o.customer_id
+ORDER BY c.customer_id;`; // Ordered for consistent results
+        const initialQuery5_5 = `SELECT o.order_id, c.first_name, c.last_name
+FROM Orders o
+RIGHT JOIN Customers c ON o.customer_id = c.customer_id;`; // Conceptual RIGHT JOIN
+        const initialQuery5_6 = `SELECT c.first_name, o.order_id
+FROM Customers c
+FULL OUTER JOIN Orders o ON c.customer_id = o.customer_id;`; // Conceptual FULL OUTER JOIN
+        const initialQuery5_7 = `SELECT
+    p1.product_name AS product1,
+    p1.price AS price1,
+    p2.product_name AS product2,
+    p2.price AS price2,
+    p1.category
+FROM Products p1
+JOIN Products p2 ON p1.category = p2.category AND p1.product_id < p2.product_id
+WHERE p1.price != p2.price
+ORDER BY p1.category, p1.price, p2.price;`; // Self-Join Example
+
+
+        // Initial SQL content for exercises
+        const initialExercise5_1 = `SELECT c.customer_id, c.first_name, c.last_name, o.order_id, o.total_amount, o.order_date
+FROM Customers c
+INNER JOIN Orders o ON c.customer_id = o.customer_id
+ORDER BY c.customer_id ASC, o.order_date ASC;`;
+        const initialExercise5_2 = `SELECT c.customer_id, c.first_name, c.last_name, o.order_id, o.total_amount
+FROM Customers c
+LEFT JOIN Orders o ON c.customer_id = o.customer_id
+ORDER BY c.customer_id ASC;`;
+        const initialExercise5_3 = `SELECT o.order_id, p.product_name, p.category, oi.quantity, oi.item_price
+FROM Orders o
+INNER JOIN OrderItems oi ON o.order_id = oi.order_id
+INNER JOIN Products p ON oi.product_id = p.product_id
+ORDER BY o.order_id ASC, p.product_name ASC;`;
+        const initialExercise5_4 = `SELECT p.product_id, p.product_name
+FROM Products p
+LEFT JOIN OrderItems oi ON p.product_id = oi.product_id
+WHERE oi.order_id IS NULL
+ORDER BY p.product_id ASC;`;
+
+
+        // Keep track of editors
+        const editors = {};
+
+        /**
+         * Renders query results in a table format.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function renderResults(resultsContainer, columns, rows) {
+            emptyElement(resultsContainer); // Clear previous results
+
+            if (!columns || columns.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No columns returned.' }));
+                return;
+            }
+            if (!rows || rows.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No rows returned.' }));
+                return;
+            }
+
+            const table = createElement('table');
+            const thead = createElement('thead');
+            const tbody = createElement('tbody');
+
+            // Create table header
+            const headerRow = createElement('tr');
+            columns.forEach(col => {
+                headerRow.appendChild(createElement('th', { textContent: col }));
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            rows.forEach(rowData => {
+                const row = createElement('tr');
+                rowData.forEach(cellData => {
+                    row.appendChild(createElement('td', { textContent: cellData === null ? 'NULL' : cellData.toString() }));
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            resultsContainer.appendChild(table);
+        }
+
+        /**
+         * Displays a message in the results container.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function displayMessage(resultsContainer, message, isError = false) {
+            emptyElement(resultsContainer);
+            const p = createElement('p', { textContent: message });
+            if (isError) {
+                p.style.color = 'var(--primary-color)';
+                p.style.fontWeight = 'bold';
+            }
+            resultsContainer.appendChild(p);
+        }
+
+        /**
+         * Handles the execution of a SQL query from an editor.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        async function handleRunQuery(editorId, resultsId) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+
+            if (!editor || !resultsContainer) {
+                console.error(`Editor (${editorId}) or results container (${resultsId}) not found.`);
+                return;
+            }
+
+            const query = editor.getValue();
+            if (!query.trim()) {
+                displayMessage(resultsContainer, 'Please enter a SQL query to execute.', true);
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Executing query...', false);
+
+            try {
+                const result = executeSql(query);
+
+                if (result.error) {
+                    displayMessage(resultsContainer, `Error: ${result.error}`, true);
+                } else if (result.isSelect) {
+                    renderResults(resultsContainer, result.columns, result.rows);
+                } else {
+                    displayMessage(resultsContainer, result.message || 'Command executed successfully.', false);
+                }
+            } catch (e) {
+                console.error('Unexpected error during query execution:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred: ${e.message}`, true);
+            }
+        }
+
+        /**
+         * Initializes an individual editor and sets up its run button.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorAndRunButton(editorId, initialContent, resultsId) {
+            const editorDiv = getElementById(editorId);
+            if (editorDiv) {
+                editors[editorId] = initializeMonacoEditor(editorId, initialContent, document.documentElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light');
+
+                const runButton = document.querySelector(`button.run-query-btn[data-editor-id="${editorId}"]`);
+                if (runButton) {
+                    runButton.addEventListener('click', () => handleRunQuery(editorId, resultsId));
+                }
+            }
+        }
+
+        /**
+         * Sets up the theme change listener for all editors.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorThemeListener() {
+            const htmlElement = document.documentElement;
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                        const newTheme = htmlElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light';
+                        for (const editorId in editors) {
+                            if (editors[editorId]) {
+                                editors[editorId].updateOptions({ theme: newTheme });
+                            }
+                        }
+                    }
+                });
+            });
+            observer.observe(htmlElement, { attributes: true });
+        }
+
+        /**
+         * Compares two 2D arrays (results from SQL queries).
+         * This version is robust for JOIN results where row order and column order might need
+         * to be strictly checked for exercises requiring specific output.
+         * It sorts rows based on a consistent serialization to handle non-deterministic order.
+         * @param {Array<string>} userColumns User's query columns.
+         * @param {Array<Array<any>>} userRows User's query rows.
+         * @param {Array<string>} expectedColumns Expected query columns.
+         * @param {Array<Array<any>>} expectedRows Expected query rows.
+         * @returns {boolean} True if results match, false otherwise.
+         */
+        function compareQueryResults(userColumns, userRows, expectedColumns, expectedRows) {
+            // Check column count and names (order-sensitive for exercise comparison, as SELECT order matters for expected output)
+            if (userColumns.length !== expectedColumns.length) {
+                console.log("Column count mismatch.");
+                return false;
+            }
+            if (JSON.stringify(userColumns) !== JSON.stringify(expectedColumns)) {
+                console.log("Column names or their order mismatch.");
+                return false;
+            }
+
+            // Check row count
+            if (userRows.length !== expectedRows.length) {
+                console.log(`Row count mismatch. Expected ${expectedRows.length}, got ${userRows.length}.`);
+                return false;
+            }
+
+            // For joins, especially if no strong ORDER BY is enforced in the solution,
+            // the order of rows might vary. Sort rows consistently for comparison.
+            const serializeRow = (row) => JSON.stringify(row.map(cell => (cell === null ? 'NULL' : String(cell))));
+            const sortedUserRowStrings = userRows.map(serializeRow).sort();
+            const sortedExpectedRowStrings = expectedRows.map(serializeRow).sort();
+
+            if (JSON.stringify(sortedUserRowStrings) !== JSON.stringify(sortedExpectedRowStrings)) {
+                console.log("Row data mismatch or order different (after internal sort).");
+                return false;
+            }
+
+            return true;
+        }
+
+
+        /**
+         * Handles the "Check Answer" functionality for exercises.
+         * @param {string} exerciseId The unique ID of the exercise.
+         * @param {string} editorId The ID of the associated editor.
+         * @param {string} resultsId The ID of the associated results container.
+         * @param {string} expectedQuery The correct SQL query for validation.
+         * @param {boolean} [requiresSelect=true] If true, validates only SELECT queries.
+         */
+        async function handleCheckAnswer(exerciseId, editorId, resultsId, expectedQuery, requiresSelect = true) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+            const exerciseItemElement = getElementById(exerciseId);
+
+            if (!editor || !resultsContainer || !exerciseItemElement) {
+                console.error(`Elements for exercise check not found: Editor(${editorId}), Results(${resultsId}), Item(${exerciseId}).`);
+                return;
+            }
+
+            const userQuery = editor.getValue();
+            if (!userQuery.trim()) {
+                displayMessage(resultsContainer, 'Please write your query before checking the answer.', true);
+                setExerciseCompleted(exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Checking your answer...', false);
+
+            try {
+                const userResult = executeSql(userQuery);
+
+                if (userResult.error) {
+                    displayMessage(resultsContainer, `Your query has an error: ${userResult.error}`, true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                if (requiresSelect && !userResult.isSelect) {
+                    displayMessage(resultsContainer, 'Please provide a SELECT query to check your answer.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                const expectedResult = executeSql(expectedQuery);
+
+                if (expectedResult.error) {
+                    console.error('Error in expected query for exercise validation:', expectedResult.error);
+                    displayMessage(resultsContainer, 'An internal error occurred while validating the exercise. Please try again later.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                let isCorrect = false;
+                if (requiresSelect) {
+                    isCorrect = compareQueryResults(userResult.columns, userResult.rows, expectedResult.columns, expectedResult.rows);
+                } else {
+                    isCorrect = !userResult.error;
+                }
+
+                if (isCorrect) {
+                    displayMessage(resultsContainer, '🎉 Correct! Well done!', false);
+                    setExerciseCompleted('chapter-05', exerciseId, true); // Mark as completed for chapter 05
+                    exerciseItemElement.style.border = '2px solid var(--primary-color)'; // Visual feedback
+                } else {
+                    displayMessage(resultsContainer, '❌ Incorrect. Review your query and try again.', true);
+                    setExerciseCompleted('chapter-05', exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)'; // Reset border
+                }
+
+                renderResults(resultsContainer, userResult.columns, userResult.rows);
+
+            } catch (e) {
+                console.error('Error during exercise check:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred during check: ${e.message}`, true);
+                setExerciseCompleted('chapter-05', exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+            }
+        }
+
+
+        // DOM Content Loaded Handler
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Chapter 5: DOM Content Loaded.');
+
+            // Initialize the database for this chapter
+            try {
+                // For JOINs, we need the OrderItems table to be available.
+                // We'll rely on the updated database/databites.db or buildDatabaseFromScripts
+                // to include it.
+                await initializeDatabase();
+            } catch (e) {
+                console.error("Failed to initialize database for Chapter 5:", e);
+                displayMessage(getElementById('results-5-1'), `Failed to load database: ${e.message}. Interactive exercises might not work. Please ensure 'databites.db' or schema/data scripts are correctly set up, including 'OrderItems' table.`, true);
+                return;
+            }
+
+            // Load Monaco Editor
+            try {
+                await loadMonacoEditor();
+            } catch (e) {
+                console.error("Failed to load Monaco Editor for Chapter 5:", e);
+                displayMessage(getElementById('results-5-1'), `Failed to load code editor: ${e.message}. Code interaction will not work.`, true);
+                return;
+            }
+
+            // Set up demonstration editors
+            setupEditorAndRunButton('editor-5-1', initialQuery5_1, 'results-5-1');
+            setupEditorAndRunButton('editor-5-2', initialQuery5_2, 'results-5-2');
+            setupEditorAndRunButton('editor-5-3', initialQuery5_3, 'results-5-3');
+            setupEditorAndRunButton('editor-5-4', initialQuery5_4, 'results-5-4');
+            setupEditorAndRunButton('editor-5-5', initialQuery5_5, 'results-5-5');
+            setupEditorAndRunButton('editor-5-6', initialQuery5_6, 'results-5-6');
+            setupEditorAndRunButton('editor-5-7', initialQuery5_7, 'results-5-7');
+
+
+            // Set up exercise editors and their check buttons
+            setupEditorAndRunButton('exercise-editor-5-1', initialExercise5_1, 'exercise-results-5-1');
+            const checkBtn5_1 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-05-exercise-5-1"]');
+            if (checkBtn5_1) {
+                checkBtn5_1.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-05-exercise-5-1',
+                    'exercise-editor-5-1',
+                    'exercise-results-5-1',
+                    `SELECT c.customer_id, c.first_name, c.last_name, o.order_id, o.total_amount, o.order_date
+FROM Customers c
+INNER JOIN Orders o ON c.customer_id = o.customer_id
+ORDER BY c.customer_id ASC, o.order_date ASC;`
+                ));
+                if (isExerciseCompleted('chapter-05', 'chapter-05-exercise-5-1')) {
+                    getElementById('chapter-05-exercise-5-1').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-5-2', initialExercise5_2, 'exercise-results-5-2');
+            const checkBtn5_2 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-05-exercise-5-2"]');
+            if (checkBtn5_2) {
+                checkBtn5_2.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-05-exercise-5-2',
+                    'exercise-editor-5-2',
+                    'exercise-results-5-2',
+                    `SELECT c.customer_id, c.first_name, c.last_name, o.order_id, o.total_amount
+FROM Customers c
+LEFT JOIN Orders o ON c.customer_id = o.customer_id
+ORDER BY c.customer_id ASC;`
+                ));
+                 if (isExerciseCompleted('chapter-05', 'chapter-05-exercise-5-2')) {
+                    getElementById('chapter-05-exercise-5-2').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-5-3', initialExercise5_3, 'exercise-results-5-3');
+            const checkBtn5_3 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-05-exercise-5-3"]');
+            if (checkBtn5_3) {
+                checkBtn5_3.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-05-exercise-5-3',
+                    'exercise-editor-5-3',
+                    'exercise-results-5-3',
+                    `SELECT o.order_id, p.product_name, p.category, oi.quantity, oi.item_price
+FROM Orders o
+INNER JOIN OrderItems oi ON o.order_id = oi.order_id
+INNER JOIN Products p ON oi.product_id = p.product_id
+ORDER BY o.order_id ASC, p.product_name ASC;`
+                ));
+                 if (isExerciseCompleted('chapter-05', 'chapter-05-exercise-5-3')) {
+                    getElementById('chapter-05-exercise-5-3').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-5-4', initialExercise5_4, 'exercise-results-5-4');
+            const checkBtn5_4 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-05-exercise-5-4"]');
+            if (checkBtn5_4) {
+                checkBtn5_4.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-05-exercise-5-4',
+                    'exercise-editor-5-4',
+                    'exercise-results-5-4',
+                    `SELECT p.product_id, p.product_name
+FROM Products p
+LEFT JOIN OrderItems oi ON p.product_id = oi.product_id
+WHERE oi.order_id IS NULL
+ORDER BY p.product_id ASC;`
+                ));
+                 if (isExerciseCompleted('chapter-05', 'chapter-05-exercise-5-4')) {
+                    getElementById('chapter-05-exercise-5-4').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+
+            setupEditorThemeListener();
+
+            // Mark chapter as visited/started for progress tracking
+            // setChapterCompleted('chapter-05', true);
+        });
+
+        // Ensure editors resize when window resizes
+        window.addEventListener('resize', () => {
+            for (const editorId in editors) {
+                if (editors[editorId]) {
+                    editors[editorId].layout();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

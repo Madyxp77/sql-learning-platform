@@ -1,0 +1,365 @@
+/* General Resets and Base Styles */
+:root {
+    /* Define font families */
+    --font-primary: 'Inter', sans-serif;
+    /* Define border-radius for rounded corners */
+    --border-radius-sm: 0.25rem; /* 4px */
+    --border-radius-md: 0.5rem;  /* 8px */
+    --border-radius-lg: 0.75rem; /* 12px */
+    --border-radius-xl: 1rem;    /* 16px */
+}
+
+/* Universal box-sizing for consistent element sizing */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Base HTML font size for rem units and smooth scrolling */
+html {
+    font-size: 16px; /* 1rem = 16px */
+    scroll-behavior: smooth;
+}
+
+/* Body typography, colors, and layout */
+body {
+    font-family: var(--font-primary);
+    line-height: 1.6;
+    color: var(--text-color); /* Uses variable from theme.css for dynamic text color */
+    background-color: var(--background-color); /* Uses variable from theme.css for dynamic background */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for theme changes */
+    min-height: 100vh; /* Ensures body takes at least full viewport height */
+    display: flex; /* Flex container for sticky footer */
+    flex-direction: column; /* Stacks header, main, footer vertically */
+}
+
+/* Container for consistent content width and horizontal centering */
+.container {
+    max-width: 1200px; /* Maximum width for content */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 0 1rem; /* Responsive padding on left/right */
+}
+
+/* Anchor tag styling */
+a {
+    color: var(--primary-color); /* Uses variable from theme.css for link color */
+    text-decoration: none; /* No underline by default */
+    transition: color 0.2s ease; /* Smooth color transition on hover */
+}
+
+a:hover {
+    color: var(--primary-hover-color); /* Uses variable from theme.css for hover color */
+    text-decoration: underline; /* Underline on hover for clarity */
+}
+
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700; /* Bold font weight */
+    line-height: 1.2; /* Tighter line height for headings */
+    margin-bottom: 0.8em; /* Spacing below headings */
+    color: var(--heading-color); /* Uses variable from theme.css for heading color */
+}
+
+/* Responsive font sizes for headings */
+h1 { font-size: 2.5rem; } /* ~40px */
+h2 { font-size: 2rem; }   /* ~32px */
+h3 { font-size: 1.75rem; }/* ~28px */
+h4 { font-size: 1.5rem; } /* ~24px */
+
+/* Paragraph spacing */
+p {
+    margin-bottom: 1em;
+}
+
+/* --- Button Styles --- */
+.btn {
+    display: inline-block; /* Allows padding and width to be applied */
+    padding: 0.8rem 1.8rem; /* Vertical and horizontal padding */
+    border-radius: var(--border-radius-md); /* Rounded corners */
+    font-weight: 600; /* Semi-bold text */
+    text-align: center; /* Center text within the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; /* Smooth transitions */
+    border: none; /* No default border */
+    text-decoration: none; /* No underline for button links */
+    user-select: none; /* Prevent text selection */
+}
+
+/* Primary button style */
+.btn-primary {
+    background-color: var(--primary-color); /* Uses variable from theme.css */
+    color: var(--button-text-color); /* Uses variable from theme.css */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover-color); /* Uses variable from theme.css */
+    transform: translateY(-2px); /* Slight lift effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+}
+
+/* Secondary button style (outline) */
+.btn-secondary {
+    background-color: transparent;
+    color: var(--primary-color); /* Uses variable from theme.css */
+    border: 2px solid var(--primary-color); /* Border color from theme.css */
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-color); /* Fills with primary color on hover */
+    color: var(--button-text-color); /* Text color changes to button text color */
+    transform: translateY(-2px); /* Slight lift effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+}
+
+/* --- Header Section --- */
+.main-header {
+    background-color: var(--header-bg-color); /* Uses variable from theme.css */
+    padding: 1rem 0; /* Vertical padding */
+    box-shadow: var(--header-shadow); /* Shadow from theme.css */
+    position: sticky; /* Sticky header */
+    top: 0; /* Sticks to the top */
+    z-index: 1000; /* Ensures header is above other content */
+}
+
+.header-content {
+    display: flex; /* Flex container for logo, nav, toggle */
+    justify-content: space-between; /* Distributes items with space between */
+    align-items: center; /* Vertically aligns items in the center */
+    flex-wrap: wrap; /* Allows items to wrap onto the next line on smaller screens */
+}
+
+.logo a {
+    font-size: 1.5rem; /* Logo text size */
+    font-weight: 700; /* Bold font for logo */
+    color: var(--heading-color); /* Uses heading color for logo */
+    text-decoration: none; /* No underline */
+}
+
+.main-nav ul {
+    list-style: none; /* Removes bullet points */
+    display: flex; /* Flex container for nav items */
+    gap: 1.5rem; /* Space between nav items */
+}
+
+.main-nav a {
+    font-weight: 600; /* Semi-bold nav links */
+    color: var(--nav-link-color); /* Nav link color from theme.css */
+    transition: color 0.2s ease; /* Smooth color transition */
+}
+
+.main-nav a:hover {
+    color: var(--nav-link-hover-color); /* Nav link hover color from theme.css */
+    text-decoration: none; /* No underline on hover (already default, but good to be explicit) */
+}
+
+.theme-toggle-container {
+    margin-left: 1rem; /* Space to the left of the toggle button */
+}
+
+#theme-toggle {
+    background: var(--toggle-bg); /* Background color from theme.css */
+    border: 1px solid var(--toggle-border); /* Border from theme.css */
+    border-radius: var(--border-radius-md); /* Rounded corners */
+    padding: 0.5rem 0.75rem; /* Padding inside the button */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 1.2rem; /* Icon font size */
+    color: var(--toggle-color); /* Icon color from theme.css */
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    display: flex; /* Flex container to center icon */
+    align-items: center; /* Center icon vertically */
+    justify-content: center; /* Center icon horizontally */
+}
+
+#theme-toggle:hover {
+    background: var(--toggle-hover-bg); /* Hover background from theme.css */
+    border-color: var(--toggle-hover-border); /* Hover border from theme.css */
+}
+
+#theme-toggle .icon {
+    display: block; /* Ensures the icon element itself is treated as a block for centering */
+}
+
+/* --- Hero Section --- */
+.hero-section {
+    background-color: var(--hero-bg-color); /* Background from theme.css */
+    color: var(--hero-text-color); /* Text color from theme.css */
+    padding: 4rem 0 6rem; /* Top, bottom padding */
+    text-align: center; /* Center all content */
+    display: flex; /* Flex container for centering hero-content */
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+    flex-grow: 1; /* Allows main section to take available space */
+}
+
+.hero-content {
+    max-width: 800px; /* Max width for hero text */
+}
+
+.hero-title {
+    font-size: 3.5rem; /* Large title for impact */
+    margin-bottom: 0.5rem; /* Space below title */
+    line-height: 1.1; /* Tighter line height */
+    color: var(--hero-title-color); /* Title color from theme.css */
+}
+
+.hero-subtitle {
+    font-size: 1.25rem; /* Subtitle text size */
+    margin-bottom: 2rem; /* Space below subtitle */
+    opacity: 0.9; /* Slightly transparent */
+}
+
+.hero-actions {
+    display: flex; /* Flex container for buttons */
+    justify-content: center; /* Center buttons horizontally */
+    gap: 1.5rem; /* Space between buttons */
+}
+
+/* --- Content Sections (e.g., Overview, Features) --- */
+.content-section {
+    padding: 4rem 0; /* Vertical padding for content sections */
+    background-color: var(--content-bg-color); /* Background from theme.css */
+    border-top: 1px solid var(--border-color); /* Top border for separation */
+    text-align: center; /* Center content within the section */
+}
+
+.content-section h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2.25rem; /* Section title size */
+}
+
+.content-section p {
+    max-width: 800px; /* Max width for paragraph text */
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2rem;
+}
+
+.features-grid {
+    display: grid; /* Grid layout for feature items */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid columns */
+    gap: 2rem; /* Space between grid items */
+    margin-top: 2rem; /* Space above the grid */
+}
+
+.feature-item {
+    background-color: var(--card-bg-color); /* Card background from theme.css */
+    padding: 2rem; /* Padding inside card */
+    border-radius: var(--border-radius-lg); /* Rounded corners */
+    box-shadow: var(--card-shadow); /* Card shadow from theme.css */
+    text-align: left; /* Align text within card to left */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth transitions for hover */
+}
+
+.feature-item:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: var(--card-hover-shadow); /* Enhanced shadow on hover */
+}
+
+.feature-item h3 {
+    color: var(--primary-color); /* Feature title color from theme.css */
+    margin-bottom: 0.8rem;
+    font-size: 1.5rem;
+}
+
+.feature-item p {
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-bottom: 0;
+}
+
+/* --- Footer Section --- */
+.main-footer {
+    background-color: var(--footer-bg-color); /* Footer background from theme.css */
+    color: var(--footer-text-color); /* Footer text color from theme.css */
+    padding: 2rem 0; /* Vertical padding */
+    text-align: center; /* Center all footer content */
+    margin-top: auto; /* Pushes footer to the bottom of the page (flex property) */
+}
+
+.footer-links {
+    margin-top: 1rem; /* Space above footer links */
+}
+
+.footer-links a {
+    color: var(--footer-link-color); /* Footer link color from theme.css */
+    margin: 0 0.8rem; /* Horizontal space between links */
+    font-size: 0.9rem; /* Smaller font size for footer links */
+}
+
+.footer-links a:hover {
+    color: var(--footer-link-hover-color); /* Footer link hover color from theme.css */
+}
+
+
+/* --- Responsive Design (Mobile-First Approach) --- */
+
+/* Medium devices (tablets, 768px and down) */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column; /* Stack header items vertically */
+        text-align: center;
+    }
+
+    .main-nav ul {
+        flex-direction: column; /* Stack nav items vertically */
+        gap: 0.8rem; /* Smaller gap */
+        margin-top: 1rem; /* Space above nav */
+    }
+
+    .theme-toggle-container {
+        margin-top: 1rem; /* Space above toggle button */
+        margin-left: 0; /* Remove left margin */
+    }
+
+    .hero-title {
+        font-size: 2.5rem; /* Smaller title on mobile */
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .hero-actions {
+        flex-direction: column; /* Stack buttons vertically */
+        gap: 0.8rem; /* Smaller gap */
+    }
+
+    .btn {
+        padding: 0.7rem 1.5rem;
+        width: 80%; /* Make buttons wider for better touch targets */
+        max-width: 300px; /* Limit max width */
+        margin: 0 auto; /* Center buttons */
+    }
+
+    .content-section {
+        padding: 3rem 0; /* Reduced padding */
+    }
+
+    .content-section h2 {
+        font-size: 1.8rem;
+    }
+
+    .feature-item {
+        padding: 1.5rem; /* Reduced padding for feature cards */
+    }
+}
+
+/* Small devices (phones, 480px and down) */
+@media (max-width: 480px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.6rem; }
+
+    .main-nav a {
+        font-size: 0.9rem; /* Smaller nav links */
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+}
+

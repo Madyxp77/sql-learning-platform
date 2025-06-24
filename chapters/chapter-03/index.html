@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 3: ORDER BY Clause - The SQL Path</title>
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+    <!-- Main stylesheet for general layout and responsiveness -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Theme stylesheet for dark/light mode variables and transitions -->
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - Inter for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Chapter-specific styles for better content presentation (replicated from Chapter 1/2 for consistency) */
+        .chapter-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .breadcrumbs {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--nav-link-color);
+        }
+
+        .breadcrumbs a {
+            color: var(--nav-link-color);
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .chapter-title {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-intro {
+            font-size: 1.15rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            max-width: 850px;
+            line-height: 1.7;
+        }
+
+        .chapter-section {
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+        }
+
+        .chapter-section h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .chapter-section h3 {
+            font-size: 1.6rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-section p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .code-block-container {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            background-color: var(--code-bg-color);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--code-border-color);
+            overflow: hidden;
+        }
+
+        .code-editor {
+            height: 200px; /* Default height for the Monaco editor */
+            width: 100%;
+            border-bottom: 1px solid var(--code-border-color);
+        }
+
+        .editor-actions {
+            padding: 0.8rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .query-results {
+            background-color: var(--content-bg-color);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            min-height: 50px;
+            max-height: 300px;
+            overflow: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            border-bottom-left-radius: var(--border-radius-md);
+            border-bottom-right-radius: var(--border-radius-md);
+        }
+
+        .query-results table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        .query-results th, .query-results td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .query-results th {
+            background-color: var(--primary-color);
+            color: var(--button-text-color);
+            font-weight: 600;
+        }
+
+        .exercise-section {
+            margin-top: 3rem;
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+        }
+
+        .exercise-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            background-color: var(--background-color); /* Lighter background for exercises */
+        }
+
+        .exercise-item h3 {
+            margin-top: 0;
+            color: var(--heading-color);
+            font-size: 1.3rem;
+        }
+
+        .exercise-item p {
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chapter-title {
+                font-size: 2rem;
+            }
+            .chapter-intro {
+                font-size: 1rem;
+            }
+            .chapter-section {
+                padding: 1.5rem;
+            }
+            .chapter-section h2 {
+                font-size: 1.8rem;
+            }
+            .chapter-section h3 {
+                font-size: 1.4rem;
+            }
+            .editor-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .editor-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../../index.html">The SQL Path</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../../index.html#chapters">Chapters</a></li>
+                    <li><a href="../../index.html#about">About</a></li>
+                    <li><a href="../../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon for theme toggle - will be set by JavaScript -->
+                    <span class="icon">💡</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="chapter-main">
+        <div class="container chapter-container">
+            <nav class="breadcrumbs">
+                <a href="../../index.html">Home</a> &gt; <a href="../../index.html#chapters">Chapters</a> &gt; <span>Chapter 3</span>
+            </nav>
+
+            <h1 class="chapter-title">Chapter 3: Order in the Data – Sorting Your Results with `ORDER BY`</h1>
+            <p class="chapter-intro">By now, you're a master at selecting specific columns and filtering rows. But often, the order in which data is presented matters. The `ORDER BY` clause allows you to sort your query results based on one or more columns, in either ascending or descending order, making your data more readable and insightful.</p>
+
+            <section class="chapter-section">
+                <h2>3.1 Sorting in Ascending Order (`ASC`)</h2>
+                <p>The `ORDER BY` clause is placed after the `FROM` and `WHERE` clauses. By default, if you don't specify `ASC` or `DESC`, most SQL databases will sort in ascending order.</p>
+                <p>Let's retrieve all customers and order them by their `last_name` in alphabetical (ascending) order.</p>
+                <div class="code-block-container">
+                    <div id="editor-3-1" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-3-1">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-3-1">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>You can explicitly add the `ASC` keyword for clarity:</p>
+                <div class="code-block-container">
+                    <div id="editor-3-2" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-3-2">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-3-2">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Now, try ordering the `Products` by `price` from lowest to highest.</p>
+                <div class="code-block-container">
+                    <div id="editor-3-3" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-3-3">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-3-3">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>3.2 Sorting in Descending Order (`DESC`)</h2>
+                <p>To sort results in reverse alphabetical or numerical order, you use the `DESC` keyword. This is particularly useful for finding the most recent, most expensive, or highest-value items.</p>
+                <p>Let's find the most recent orders first by ordering them by `order_date` in descending order.</p>
+                <div class="code-block-container">
+                    <div id="editor-3-4" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-3-4">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-3-4">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Now, try to list the most expensive products first.</p>
+                <div class="code-block-container">
+                    <div id="editor-3-5" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-3-5">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-3-5">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>3.3 Sorting by Multiple Columns</h2>
+                <p>You can sort your results by more than one column. The order in which you list the columns in the `ORDER BY` clause matters: the database will sort by the first column, and then for any rows that have identical values in the first column, it will sort by the second column, and so on.</p>
+                <p>Let's sort customers first by their `country` (ascending), and then by their `last_name` (ascending) within each country.</p>
+                <div class="code-block-container">
+                    <div id="editor-3-6" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-3-6">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-3-6">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Now, try to list products, first by `category` in ascending order, and then by `price` in descending order within each category. This will show you the most expensive items in each product category at the top.</p>
+                <div class="code-block-container">
+                    <div id="editor-3-7" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-3-7">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-3-7">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>3.4 `ORDER BY` with `LIMIT` (or `TOP`)</h2>
+                <p>Combining `ORDER BY` with `LIMIT` (or `TOP` in SQL Server) is very common for tasks like finding the top N records, or the N most recent records.</p>
+                <p>Let's find the 5 most recently registered customers.</p>
+                <div class="code-block-container">
+                    <div id="editor-3-8" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-3-8">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-3-8">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Now, find the 3 cheapest 'Electronics' products.</p>
+                <div class="code-block-container">
+                    <div id="editor-3-9" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-3-9">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-3-9">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+
+            <section class="exercise-section">
+                <h2>Chapter 3 Exercises</h2>
+                <p>Put your sorting skills to the test with these practical exercises.</p>
+
+                <div class="exercise-item" data-exercise-id="chapter-03-exercise-3-1">
+                    <h3>Exercise 3.1: Oldest Customers First</h3>
+                    <p>Retrieve all columns from the `Customers` table, ordered by their `registration_date` from the oldest to the newest. Then, for customers registered on the same date, sort by `last_name` in ascending order.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-3-1" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-3-1">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-03-exercise-3-1">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-3-1">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-03-exercise-3-2">
+                    <h3>Exercise 3.2: Product Catalog Review</h3>
+                    <p>Display the `product_name`, `category`, and `price` for all products. First, sort by `category` alphabetically. Within each category, sort products by `price` in descending order. Then, for products with the same category and price, sort them by `product_name` in ascending order.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-3-2" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-3-2">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-03-exercise-3-2">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-3-2">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-03-exercise-3-3">
+                    <h3>Exercise 3.3: Top 5 Orders by Total Amount</h3>
+                    <p>Retrieve the `order_id`, `customer_id`, `order_date`, and `total_amount` for the top 5 orders with the highest `total_amount`. Ensure the results are displayed from highest to lowest amount.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-3-3" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-3-3">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-03-exercise-3-3">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-3-3">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> The SQL Path. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global scripts: main.js handles theme toggle, etc. -->
+    <script type="module" src="../../assets/js/main.js"></script>
+
+    <!-- Chapter-specific scripts for SQL Editor and Database interaction -->
+    <script type="module">
+        import { loadMonacoEditor, initializeMonacoEditor, getEditorContent, setEditorContent } from '../../assets/js/code-editor.js';
+        import { initializeDatabase, executeSql } from '../../assets/js/sql-engine.js';
+        import { setExerciseCompleted, isExerciseCompleted } from '../../assets/js/progress-tracking.js';
+        import { getElementById, createElement, emptyElement } from '../../assets/js/utils.js';
+
+        // Initial SQL content for the demonstration editors
+        const initialQuery3_1 = `SELECT * FROM Customers ORDER BY last_name;`;
+        const initialQuery3_2 = `SELECT * FROM Customers ORDER BY last_name ASC;`;
+        const initialQuery3_3 = `SELECT product_name, price FROM Products ORDER BY price ASC;`;
+        const initialQuery3_4 = `SELECT * FROM Orders ORDER BY order_date DESC;`;
+        const initialQuery3_5 = `SELECT product_name, price FROM Products ORDER BY price DESC;`;
+        const initialQuery3_6 = `SELECT customer_id, first_name, last_name, country FROM Customers ORDER BY country ASC, last_name ASC;`;
+        const initialQuery3_7 = `SELECT product_name, category, price FROM Products ORDER BY category ASC, price DESC;`;
+        const initialQuery3_8 = `SELECT * FROM Customers ORDER BY registration_date DESC LIMIT 5;`;
+        const initialQuery3_9 = `SELECT product_name, category, price FROM Products WHERE category = 'Electronics' ORDER BY price ASC LIMIT 3;`;
+
+
+        // Initial SQL content for exercises
+        const initialExercise3_1 = `SELECT * FROM Customers ORDER BY registration_date ASC, last_name ASC;`;
+        const initialExercise3_2 = `SELECT product_name, category, price FROM Products ORDER BY category ASC, price DESC, product_name ASC;`;
+        const initialExercise3_3 = `SELECT order_id, customer_id, order_date, total_amount FROM Orders ORDER BY total_amount DESC LIMIT 5;`;
+
+
+        // Keep track of editors
+        const editors = {};
+
+        /**
+         * Renders query results in a table format.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function renderResults(resultsContainer, columns, rows) {
+            emptyElement(resultsContainer); // Clear previous results
+
+            if (!columns || columns.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No columns returned.' }));
+                return;
+            }
+            if (!rows || rows.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No rows returned.' }));
+                return;
+            }
+
+            const table = createElement('table');
+            const thead = createElement('thead');
+            const tbody = createElement('tbody');
+
+            // Create table header
+            const headerRow = createElement('tr');
+            columns.forEach(col => {
+                headerRow.appendChild(createElement('th', { textContent: col }));
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            rows.forEach(rowData => {
+                const row = createElement('tr');
+                rowData.forEach(cellData => {
+                    row.appendChild(createElement('td', { textContent: cellData === null ? 'NULL' : cellData.toString() }));
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            resultsContainer.appendChild(table);
+        }
+
+        /**
+         * Displays a message in the results container.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function displayMessage(resultsContainer, message, isError = false) {
+            emptyElement(resultsContainer);
+            const p = createElement('p', { textContent: message });
+            if (isError) {
+                p.style.color = 'var(--primary-color)';
+                p.style.fontWeight = 'bold';
+            }
+            resultsContainer.appendChild(p);
+        }
+
+        /**
+         * Handles the execution of a SQL query from an editor.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        async function handleRunQuery(editorId, resultsId) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+
+            if (!editor || !resultsContainer) {
+                console.error(`Editor (${editorId}) or results container (${resultsId}) not found.`);
+                return;
+            }
+
+            const query = editor.getValue();
+            if (!query.trim()) {
+                displayMessage(resultsContainer, 'Please enter a SQL query to execute.', true);
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Executing query...', false);
+
+            try {
+                const result = executeSql(query);
+
+                if (result.error) {
+                    displayMessage(resultsContainer, `Error: ${result.error}`, true);
+                } else if (result.isSelect) {
+                    renderResults(resultsContainer, result.columns, result.rows);
+                } else {
+                    displayMessage(resultsContainer, result.message || 'Command executed successfully.', false);
+                }
+            } catch (e) {
+                console.error('Unexpected error during query execution:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred: ${e.message}`, true);
+            }
+        }
+
+        /**
+         * Initializes an individual editor and sets up its run button.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorAndRunButton(editorId, initialContent, resultsId) {
+            const editorDiv = getElementById(editorId);
+            if (editorDiv) {
+                editors[editorId] = initializeMonacoEditor(editorId, initialContent, document.documentElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light');
+
+                const runButton = document.querySelector(`button.run-query-btn[data-editor-id="${editorId}"]`);
+                if (runButton) {
+                    runButton.addEventListener('click', () => handleRunQuery(editorId, resultsId));
+                }
+            }
+        }
+
+        /**
+         * Sets up the theme change listener for all editors.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorThemeListener() {
+            const htmlElement = document.documentElement;
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                        const newTheme = htmlElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light';
+                        for (const editorId in editors) {
+                            if (editors[editorId]) {
+                                editors[editorId].updateOptions({ theme: newTheme });
+                            }
+                        }
+                    }
+                });
+            });
+            observer.observe(htmlElement, { attributes: true });
+        }
+
+        /**
+         * Compares two 2D arrays (results from SQL queries).
+         * This is a basic comparison that checks column order and cell values.
+         * It's not robust for all SQL nuances (e.g., floating point precision, NULL handling across different DBs).
+         * @param {Array<string>} userColumns User's query columns.
+         * @param {Array<Array<any>>} userRows User's query rows.
+         * @param {Array<string>} expectedColumns Expected query columns.
+         * @param {Array<Array<any>>} expectedRows Expected query rows.
+         * @returns {boolean} True if results match, false otherwise.
+         */
+        function compareQueryResults(userColumns, userRows, expectedColumns, expectedRows) {
+            // Check column count and names
+            if (userColumns.length !== expectedColumns.length) {
+                console.log("Column count mismatch.");
+                return false;
+            }
+            // Sort column names for comparison to be order-independent
+            const sortedUserCols = [...userColumns].sort();
+            const sortedExpectedCols = [...expectedColumns].sort();
+            if (JSON.stringify(sortedUserCols) !== JSON.stringify(sortedExpectedCols)) {
+                console.log("Column names mismatch or order different.");
+                return false;
+            }
+
+            // Check row count
+            if (userRows.length !== expectedRows.length) {
+                console.log(`Row count mismatch. Expected ${expectedRows.length}, got ${userRows.length}.`);
+                return false;
+            }
+
+            // Deep compare rows (order of rows might matter depending on query, for ORDER BY it matters!)
+            // For ORDER BY, we need a strict, ordered comparison.
+            const userRowStrings = userRows.map(row => row.map(cell => cell === null ? 'NULL' : cell.toString()));
+            const expectedRowStrings = expectedRows.map(row => row.map(cell => cell === null ? 'NULL' : cell.toString()));
+
+            for (let i = 0; i < userRowStrings.length; i++) {
+                if (JSON.stringify(userRowStrings[i]) !== JSON.stringify(expectedRowStrings[i])) {
+                    console.log(`Row data mismatch at index ${i}.`);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
+        /**
+         * Handles the "Check Answer" functionality for exercises.
+         * This version provides basic validation against expected results.
+         * @param {string} exerciseId The unique ID of the exercise.
+         * @param {string} editorId The ID of the associated editor.
+         * @param {string} resultsId The ID of the associated results container.
+         * @param {string} expectedQuery The correct SQL query for validation.
+         * @param {boolean} [requiresSelect=true] If true, validates only SELECT queries.
+         */
+        async function handleCheckAnswer(exerciseId, editorId, resultsId, expectedQuery, requiresSelect = true) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+            const exerciseItemElement = getElementById(exerciseId);
+
+            if (!editor || !resultsContainer || !exerciseItemElement) {
+                console.error(`Elements for exercise check not found: Editor(${editorId}), Results(${resultsId}), Item(${exerciseId}).`);
+                return;
+            }
+
+            const userQuery = editor.getValue();
+            if (!userQuery.trim()) {
+                displayMessage(resultsContainer, 'Please write your query before checking the answer.', true);
+                setExerciseCompleted(exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Checking your answer...', false);
+
+            try {
+                const userResult = executeSql(userQuery);
+
+                if (userResult.error) {
+                    displayMessage(resultsContainer, `Your query has an error: ${userResult.error}`, true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                if (requiresSelect && !userResult.isSelect) {
+                    displayMessage(resultsContainer, 'Please provide a SELECT query to check your answer.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                const expectedResult = executeSql(expectedQuery);
+
+                if (expectedResult.error) {
+                    console.error('Error in expected query for exercise validation:', expectedResult.error);
+                    displayMessage(resultsContainer, 'An internal error occurred while validating the exercise. Please try again later.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                let isCorrect = false;
+                if (requiresSelect) {
+                    isCorrect = compareQueryResults(userResult.columns, userResult.rows, expectedResult.columns, expectedResult.rows);
+                } else {
+                    isCorrect = !userResult.error;
+                }
+
+                if (isCorrect) {
+                    displayMessage(resultsContainer, '🎉 Correct! Well done!', false);
+                    setExerciseCompleted('chapter-03', exerciseId, true); // Mark as completed for chapter 03
+                    exerciseItemElement.style.border = '2px solid var(--primary-color)'; // Visual feedback
+                } else {
+                    displayMessage(resultsContainer, '❌ Incorrect. Review your query and try again.', true);
+                    setExerciseCompleted('chapter-03', exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)'; // Reset border
+                }
+
+                renderResults(resultsContainer, userResult.columns, userResult.rows);
+
+            } catch (e) {
+                console.error('Error during exercise check:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred during check: ${e.message}`, true);
+                setExerciseCompleted('chapter-03', exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+            }
+        }
+
+
+        // DOM Content Loaded Handler
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Chapter 3: DOM Content Loaded.');
+
+            // Initialize the database for this chapter
+            try {
+                await initializeDatabase(); // Loads databites.db or builds from scripts
+            } catch (e) {
+                console.error("Failed to initialize database for Chapter 3:", e);
+                displayMessage(getElementById('results-3-1'), `Failed to load database: ${e.message}. Interactive exercises might not work.`, true);
+                return; // Stop further initialization if DB fails
+            }
+
+            // Load Monaco Editor
+            try {
+                await loadMonacoEditor();
+            } catch (e) {
+                console.error("Failed to load Monaco Editor for Chapter 3:", e);
+                displayMessage(getElementById('results-3-1'), `Failed to load code editor: ${e.message}. Code interaction will not work.`, true);
+                return; // Stop further initialization if editor fails
+            }
+
+            // Set up demonstration editors
+            setupEditorAndRunButton('editor-3-1', initialQuery3_1, 'results-3-1');
+            setupEditorAndRunButton('editor-3-2', initialQuery3_2, 'results-3-2');
+            setupEditorAndRunButton('editor-3-3', initialQuery3_3, 'results-3-3');
+            setupEditorAndRunButton('editor-3-4', initialQuery3_4, 'results-3-4');
+            setupEditorAndRunButton('editor-3-5', initialQuery3_5, 'results-3-5');
+            setupEditorAndRunButton('editor-3-6', initialQuery3_6, 'results-3-6');
+            setupEditorAndRunButton('editor-3-7', initialQuery3_7, 'results-3-7');
+            setupEditorAndRunButton('editor-3-8', initialQuery3_8, 'results-3-8');
+            setupEditorAndRunButton('editor-3-9', initialQuery3_9, 'results-3-9');
+
+
+            // Set up exercise editors and their check buttons
+            setupEditorAndRunButton('exercise-editor-3-1', initialExercise3_1, 'exercise-results-3-1');
+            const checkBtn3_1 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-03-exercise-3-1"]');
+            if (checkBtn3_1) {
+                checkBtn3_1.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-03-exercise-3-1',
+                    'exercise-editor-3-1',
+                    'exercise-results-3-1',
+                    `SELECT * FROM Customers ORDER BY registration_date ASC, last_name ASC;`
+                ));
+                if (isExerciseCompleted('chapter-03', 'chapter-03-exercise-3-1')) {
+                    getElementById('chapter-03-exercise-3-1').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-3-2', initialExercise3_2, 'exercise-results-3-2');
+            const checkBtn3_2 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-03-exercise-3-2"]');
+            if (checkBtn3_2) {
+                checkBtn3_2.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-03-exercise-3-2',
+                    'exercise-editor-3-2',
+                    'exercise-results-3-2',
+                    `SELECT product_name, category, price FROM Products ORDER BY category ASC, price DESC, product_name ASC;`
+                ));
+                 if (isExerciseCompleted('chapter-03', 'chapter-03-exercise-3-2')) {
+                    getElementById('chapter-03-exercise-3-2').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-3-3', initialExercise3_3, 'exercise-results-3-3');
+            const checkBtn3_3 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-03-exercise-3-3"]');
+            if (checkBtn3_3) {
+                checkBtn3_3.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-03-exercise-3-3',
+                    'exercise-editor-3-3',
+                    'exercise-results-3-3',
+                    `SELECT order_id, customer_id, order_date, total_amount FROM Orders ORDER BY total_amount DESC LIMIT 5;`
+                ));
+                 if (isExerciseCompleted('chapter-03', 'chapter-03-exercise-3-3')) {
+                    getElementById('chapter-03-exercise-3-3').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorThemeListener();
+
+            // Mark chapter as visited/started for progress tracking
+            // setChapterCompleted('chapter-03', true);
+        });
+
+        // Ensure editors resize when window resizes
+        window.addEventListener('resize', () => {
+            for (const editorId in editors) {
+                if (editors[editorId]) {
+                    editors[editorId].layout();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

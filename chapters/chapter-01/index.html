@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 1: SELECT and FROM - The SQL Path</title>
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+    <!-- Main stylesheet for general layout and responsiveness -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Theme stylesheet for dark/light mode variables and transitions -->
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - Inter for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Chapter-specific styles for better content presentation */
+        .chapter-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .breadcrumbs {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--nav-link-color);
+        }
+
+        .breadcrumbs a {
+            color: var(--nav-link-color);
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .chapter-title {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-intro {
+            font-size: 1.15rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            max-width: 850px;
+            line-height: 1.7;
+        }
+
+        .chapter-section {
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+        }
+
+        .chapter-section h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .chapter-section h3 {
+            font-size: 1.6rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-section p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .code-block-container {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            background-color: var(--code-bg-color);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--code-border-color);
+            overflow: hidden;
+        }
+
+        .code-editor {
+            height: 200px; /* Default height for the Monaco editor */
+            width: 100%;
+            border-bottom: 1px solid var(--code-border-color);
+        }
+
+        .editor-actions {
+            padding: 0.8rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .query-results {
+            background-color: var(--content-bg-color);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            min-height: 50px;
+            max-height: 300px;
+            overflow: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            border-bottom-left-radius: var(--border-radius-md);
+            border-bottom-right-radius: var(--border-radius-md);
+        }
+
+        .query-results table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        .query-results th, .query-results td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .query-results th {
+            background-color: var(--primary-color);
+            color: var(--button-text-color);
+            font-weight: 600;
+        }
+
+        .exercise-section {
+            margin-top: 3rem;
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+        }
+
+        .exercise-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            background-color: var(--background-color); /* Lighter background for exercises */
+        }
+
+        .exercise-item h3 {
+            margin-top: 0;
+            color: var(--heading-color);
+            font-size: 1.3rem;
+        }
+
+        .exercise-item p {
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chapter-title {
+                font-size: 2rem;
+            }
+            .chapter-intro {
+                font-size: 1rem;
+            }
+            .chapter-section {
+                padding: 1.5rem;
+            }
+            .chapter-section h2 {
+                font-size: 1.8rem;
+            }
+            .chapter-section h3 {
+                font-size: 1.4rem;
+            }
+            .editor-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .editor-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../../index.html">The SQL Path</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../../index.html#chapters">Chapters</a></li>
+                    <li><a href="../../index.html#about">About</a></li>
+                    <li><a href="../../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon for theme toggle - will be set by JavaScript -->
+                    <span class="icon">💡</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="chapter-main">
+        <div class="container chapter-container">
+            <nav class="breadcrumbs">
+                <a href="../../index.html">Home</a> &gt; <a href="../../index.html#chapters">Chapters</a> &gt; <span>Chapter 1</span>
+            </nav>
+
+            <h1 class="chapter-title">Chapter 1: Unlocking the Vault – `SELECT` and `FROM`</h1>
+            <p class="chapter-intro">Welcome to the exciting world of SQL! In this foundational chapter, you'll learn how to "ask" your database for information using the most fundamental SQL commands: `SELECT` and `FROM`. By the end of this chapter, you'll be able to retrieve specific data and explore the structure of your tables.</p>
+
+            <section class="chapter-section">
+                <h2>1.1 The `SELECT` Statement: What Do You Want?</h2>
+                <p>The `SELECT` statement is the first step in almost every SQL query. It tells the database which columns you want to retrieve from a table. Think of it as specifying the ingredients you need from a pantry.</p>
+                <h3>Selecting All Columns (`SELECT *`)</h3>
+                <p>To retrieve all columns from a table, you use the asterisk (`*`) wildcard. This is useful for quickly inspecting a table's structure and contents.</p>
+                <div class="code-block-container">
+                    <div id="editor-1-1" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-1-1">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-1-1">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Try running the query above. You should see all the data from the `Customers` table. This table contains information about Databites customers.</p>
+
+                <h3>Selecting Specific Columns (`SELECT column1, column2`)</h3>
+                <p>Often, you only need a few specific pieces of information. You can list the exact column names you want to retrieve, separated by commas. This is more efficient as it reduces the amount of data transferred and processed.</p>
+                <div class="code-block-container">
+                    <div id="editor-1-2" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-1-2">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-1-2">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Execute this query to see only the first name, last name, and email of your customers. Notice how the result set is tailored to your request.</p>
+            </section>
+
+            <section class="chapter-section">
+                <h2>1.2 The `FROM` Clause: Where Is It?</h2>
+                <p>The `FROM` clause is just as important as `SELECT`. It specifies the table from which you want to retrieve data. Without a `FROM` clause (unless you're doing a simple calculation not involving a table), SQL wouldn't know where to look for the columns you've selected.</p>
+                <p>Every `SELECT` statement needs a `FROM` clause to indicate the source table.</p>
+                <h3>Querying the `Products` Table</h3>
+                <p>Let's retrieve all products from the `Products` table to see what Databites sells. The `Products` table holds information like product names, categories, prices, and stock quantities.</p>
+                <div class="code-block-container">
+                    <div id="editor-1-3" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-1-3">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-1-3">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>This query gives you a full overview of the products available in the Databites store. Pay attention to the column names: `product_id`, `product_name`, `category`, `price`, and `stock_quantity`.</p>
+            </section>
+
+            <section class="chapter-section">
+                <h2>1.3 `SELECT DISTINCT`: Finding Unique Values</h2>
+                <p>Sometimes, a column might contain many duplicate values. For instance, in our `Customers` table, many customers might be from the same `country`. If you want to see a list of *unique* countries (or any other column), you use the `DISTINCT` keyword.</p>
+                <p>The `DISTINCT` keyword must be placed immediately after `SELECT`.</p>
+                <div class="code-block-container">
+                    <div id="editor-1-4" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-1-4">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-1-4">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Running this query will show you a list of all the unique countries where Databites customers are located, without any repetitions.</p>
+            </section>
+
+            <section class="exercise-section">
+                <h2>Chapter 1 Exercises</h2>
+                <p>Test your understanding of `SELECT` and `FROM` with these hands-on exercises.</p>
+
+                <div class="exercise-item" data-exercise-id="chapter-01-exercise-1-1">
+                    <h3>Exercise 1.1: Customer Names</h3>
+                    <p>Retrieve the `customer_id`, `first_name`, and `last_name` of all customers from the `Customers` table.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-1-1" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-1-1">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-01-exercise-1-1">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-1-1">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-01-exercise-1-2">
+                    <h3>Exercise 1.2: Product Categories Survey</h3>
+                    <p>Display all columns for products that belong to the 'Electronics' category from the `Products` table. (Hint: While we haven't covered filtering with `WHERE` yet, try to see if you can guess how to do it based on your knowledge or common sense. If not, don't worry, we'll cover it in the next chapter! For now, you can just `SELECT *` from `Products`.)</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-1-2" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-1-2">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-01-exercise-1-2">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-1-2">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-01-exercise-1-3">
+                    <h3>Exercise 1.3: Unique Registration Years</h3>
+                    <p>Find all the unique years in which customers registered on the Databites platform. You'll need to extract the year from the `registration_date` column.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-1-3" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-1-3">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-01-exercise-1-3">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-1-3">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> The SQL Path. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global scripts: main.js handles theme toggle, etc. -->
+    <script type="module" src="../../assets/js/main.js"></script>
+
+    <!-- Chapter-specific scripts for SQL Editor and Database interaction -->
+    <script type="module">
+        import { loadMonacoEditor, initializeMonacoEditor, getEditorContent, setEditorContent } from '../../assets/js/code-editor.js';
+        import { initializeDatabase, executeSql } from '../../assets/js/sql-engine.js';
+        import { setExerciseCompleted, isExerciseCompleted } from '../../assets/js/progress-tracking.js';
+        import { getElementById, createElement, emptyElement } from '../../assets/js/utils.js';
+
+        // Initial SQL content for the demonstration editors
+        const initialQuery1_1 = `SELECT * FROM Customers;`;
+        const initialQuery1_2 = `SELECT first_name, last_name, email FROM Customers;`;
+        const initialQuery1_3 = `SELECT * FROM Products;`;
+        const initialQuery1_4 = `SELECT DISTINCT country FROM Customers;`;
+
+        // Initial SQL content for exercises
+        const initialExercise1_1 = `SELECT `; // Start with SELECT for the user
+        const initialExercise1_2 = `SELECT * FROM Products;`; // Hint for Exercise 1.2
+        const initialExercise1_3 = `SELECT DISTINCT STRFTIME('%Y', registration_date) FROM Customers;`; // Common SQLite function for year
+
+        // Keep track of editors
+        const editors = {};
+
+        /**
+         * Renders query results in a table format.
+         * @param {HTMLElement} resultsContainer The DOM element to render results into.
+         * @param {Array<string>} columns Array of column names.
+         * @param {Array<Array<any>>} rows Array of data rows.
+         */
+        function renderResults(resultsContainer, columns, rows) {
+            emptyElement(resultsContainer); // Clear previous results
+
+            if (!columns || columns.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No columns returned.' }));
+                return;
+            }
+            if (!rows || rows.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No rows returned.' }));
+                return;
+            }
+
+            const table = createElement('table');
+            const thead = createElement('thead');
+            const tbody = createElement('tbody');
+
+            // Create table header
+            const headerRow = createElement('tr');
+            columns.forEach(col => {
+                headerRow.appendChild(createElement('th', { textContent: col }));
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            rows.forEach(rowData => {
+                const row = createElement('tr');
+                rowData.forEach(cellData => {
+                    row.appendChild(createElement('td', { textContent: cellData === null ? 'NULL' : cellData.toString() }));
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            resultsContainer.appendChild(table);
+        }
+
+        /**
+         * Displays a message in the results container.
+         * @param {HTMLElement} resultsContainer The DOM element to display message in.
+         * @param {string} message The message text.
+         * @param {boolean} isError If true, styles the message as an error.
+         */
+        function displayMessage(resultsContainer, message, isError = false) {
+            emptyElement(resultsContainer);
+            const p = createElement('p', { textContent: message });
+            if (isError) {
+                p.style.color = 'var(--primary-color)'; // Use primary color for errors
+                p.style.fontWeight = 'bold';
+            }
+            resultsContainer.appendChild(p);
+        }
+
+        /**
+         * Handles the execution of a SQL query from an editor.
+         * @param {string} editorId The ID of the Monaco editor instance.
+         * @param {string} resultsId The ID of the div where results should be displayed.
+         */
+        async function handleRunQuery(editorId, resultsId) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+
+            if (!editor || !resultsContainer) {
+                console.error(`Editor (${editorId}) or results container (${resultsId}) not found.`);
+                return;
+            }
+
+            const query = editor.getValue();
+            if (!query.trim()) {
+                displayMessage(resultsContainer, 'Please enter a SQL query to execute.', true);
+                return;
+            }
+
+            // Show a loading indicator
+            displayMessage(resultsContainer, 'Executing query...', false);
+
+            try {
+                const result = executeSql(query);
+
+                if (result.error) {
+                    displayMessage(resultsContainer, `Error: ${result.error}`, true);
+                } else if (result.isSelect) {
+                    renderResults(resultsContainer, result.columns, result.rows);
+                } else {
+                    displayMessage(resultsContainer, result.message || 'Command executed successfully.', false);
+                }
+            } catch (e) {
+                console.error('Unexpected error during query execution:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred: ${e.message}`, true);
+            }
+        }
+
+        /**
+         * Initializes an individual editor and sets up its run button.
+         * @param {string} editorId The ID of the editor container.
+         * @param {string} initialContent The default content for the editor.
+         * @param {string} resultsId The ID of the results container.
+         */
+        function setupEditorAndRunButton(editorId, initialContent, resultsId) {
+            const editorDiv = getElementById(editorId);
+            if (editorDiv) {
+                editors[editorId] = initializeMonacoEditor(editorId, initialContent, document.documentElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light');
+
+                const runButton = document.querySelector(`button.run-query-btn[data-editor-id="${editorId}"]`);
+                if (runButton) {
+                    runButton.addEventListener('click', () => handleRunQuery(editorId, resultsId));
+                }
+            }
+        }
+
+        /**
+         * Sets up the theme change listener for all editors.
+         */
+        function setupEditorThemeListener() {
+            const htmlElement = document.documentElement;
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                        const newTheme = htmlElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light';
+                        for (const editorId in editors) {
+                            if (editors[editorId]) {
+                                editors[editorId].updateOptions({ theme: newTheme });
+                            }
+                        }
+                    }
+                });
+            });
+            observer.observe(htmlElement, { attributes: true });
+        }
+
+
+        /**
+         * Handles the "Check Answer" functionality for exercises.
+         * In a real LMS, this would involve comparing user query results to expected results.
+         * For now, it's a placeholder.
+         * @param {string} exerciseId The unique ID of the exercise.
+         * @param {string} editorId The ID of the associated editor.
+         * @param {string} resultsId The ID of the associated results container.
+         */
+        async function handleCheckAnswer(exerciseId, editorId, resultsId) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+
+            if (!editor || !resultsContainer) {
+                console.error(`Editor (${editorId}) or results container (${resultsId}) not found for exercise check.`);
+                return;
+            }
+
+            const userQuery = editor.getValue();
+            if (!userQuery.trim()) {
+                displayMessage(resultsContainer, 'Please write your query before checking the answer.', true);
+                return;
+            }
+
+            // In a real scenario, you'd load the expected answer for this exercise ID
+            // and compare results. For now, it's a placeholder.
+            displayMessage(resultsContainer, 'Checking your answer...', false);
+
+            try {
+                // First, run the user's query to show their results
+                const userResult = executeSql(userQuery);
+
+                if (userResult.error) {
+                    displayMessage(resultsContainer, `Your query has an error: ${userResult.error}`, true);
+                    setExerciseCompleted(exerciseId, false); // Mark as incomplete due to error
+                    return;
+                }
+
+                if (!userResult.isSelect) {
+                     displayMessage(resultsContainer, 'Please provide a SELECT query to check your answer.', true);
+                     setExerciseCompleted(exerciseId, false);
+                     return;
+                }
+
+                // Placeholder for actual answer validation logic
+                // This would typically involve:
+                // 1. Loading the expected SQL query for the exercise.
+                // 2. Executing the expected query against a fresh database instance (or the current one).
+                // 3. Comparing the user's result (columns and rows) with the expected result.
+                // 4. Providing specific feedback (e.g., "Correct!", "Incorrect: Missing column", "Incorrect: Wrong data").
+
+                // For now, a very basic placeholder check:
+                let isCorrect = false;
+                if (exerciseId === 'chapter-01-exercise-1-1') {
+                    // Expected columns: customer_id, first_name, last_name
+                    const expectedCols = ['customer_id', 'first_name', 'last_name'];
+                    // Very basic check: are the column names correct and the same number of rows as the Customers table?
+                    // This is highly simplified and not robust validation!
+                    isCorrect = userResult.columns.length === expectedCols.length &&
+                                expectedCols.every(col => userResult.columns.includes(col)) &&
+                                userResult.rows.length === 30; // Assuming 30 customers
+                } else if (exerciseId === 'chapter-01-exercise-1-2') {
+                    // For now, any SELECT * from Products passes
+                    isCorrect = userQuery.toUpperCase().includes('SELECT * FROM PRODUCTS') ||
+                                userResult.columns.length > 0; // Simple check for non-empty result
+                } else if (exerciseId === 'chapter-01-exercise-1-3') {
+                    // Expected unique years. If using STRFTIME('%Y', col), the column name might be 'STRFTIME(\'%Y\', registration_date)'
+                    // or similar depending on SQLite's default alias.
+                    const expectedYears = ["2022"]; // Based on current sample data, all customers registered in 2022
+                    const userYears = userResult.rows.map(row => row[0].toString()); // Get first column of each row
+                    const uniqueUserYears = [...new Set(userYears)].sort(); // Get unique and sort
+
+                    isCorrect = userResult.columns.length === 1 && // Expecting one column of years
+                                uniqueUserYears.length === expectedYears.length &&
+                                uniqueUserYears.every((year, index) => year === expectedYears[index]);
+                }
+
+
+                if (isCorrect) {
+                    displayMessage(resultsContainer, '🎉 Correct! Well done!', false);
+                    setExerciseCompleted(exerciseId, true); // Mark as completed
+                    // Optional: Provide visual feedback like a green border
+                    getElementById(exerciseId).style.border = '2px solid var(--primary-color)';
+                } else {
+                    displayMessage(resultsContainer, '❌ Incorrect. Review your query and try again. ', true);
+                    setExerciseCompleted(exerciseId, false); // Mark as incomplete
+                    getElementById(exerciseId).style.border = '1px solid var(--border-color)'; // Reset border
+                }
+
+                // Always display the user's query results below the feedback
+                renderResults(resultsContainer, userResult.columns, userResult.rows);
+
+            } catch (e) {
+                console.error('Error during exercise check:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred during check: ${e.message}`, true);
+                setExerciseCompleted(exerciseId, false);
+            }
+        }
+
+
+        // DOM Content Loaded Handler
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Chapter 1: DOM Content Loaded.');
+
+            // Initialize the database for this chapter
+            try {
+                await initializeDatabase(); // Loads databites.db or builds from scripts
+            } catch (e) {
+                console.error("Failed to initialize database for Chapter 1:", e);
+                // Optionally display a user-friendly error message on the page
+                displayMessage(getElementById('results-1-1'), `Failed to load database: ${e.message}. Interactive exercises might not work.`, true);
+                return; // Stop further initialization if DB fails
+            }
+
+            // Load Monaco Editor
+            try {
+                await loadMonacoEditor();
+            } catch (e) {
+                console.error("Failed to load Monaco Editor for Chapter 1:", e);
+                // Optionally display a user-friendly error message on the page
+                displayMessage(getElementById('results-1-1'), `Failed to load code editor: ${e.message}. Code interaction will not work.`, true);
+                return; // Stop further initialization if editor fails
+            }
+
+            // Set up demonstration editors
+            setupEditorAndRunButton('editor-1-1', initialQuery1_1, 'results-1-1');
+            setupEditorAndRunButton('editor-1-2', initialQuery1_2, 'results-1-2');
+            setupEditorAndRunButton('editor-1-3', initialQuery1_3, 'results-1-3');
+            setupEditorAndRunButton('editor-1-4', initialQuery1_4, 'results-1-4');
+
+            // Set up exercise editors and their check buttons
+            setupEditorAndRunButton('exercise-editor-1-1', initialExercise1_1, 'exercise-results-1-1');
+            const checkBtn1_1 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-01-exercise-1-1"]');
+            if (checkBtn1_1) {
+                checkBtn1_1.addEventListener('click', () => handleCheckAnswer('chapter-01-exercise-1-1', 'exercise-editor-1-1', 'exercise-results-1-1'));
+                // Load saved progress
+                if (isExerciseCompleted('chapter-01', 'chapter-01-exercise-1-1')) {
+                    getElementById('chapter-01-exercise-1-1').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+
+            setupEditorAndRunButton('exercise-editor-1-2', initialExercise1_2, 'exercise-results-1-2');
+            const checkBtn1_2 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-01-exercise-1-2"]');
+            if (checkBtn1_2) {
+                checkBtn1_2.addEventListener('click', () => handleCheckAnswer('chapter-01-exercise-1-2', 'exercise-editor-1-2', 'exercise-results-1-2'));
+                 if (isExerciseCompleted('chapter-01', 'chapter-01-exercise-1-2')) {
+                    getElementById('chapter-01-exercise-1-2').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-1-3', initialExercise1_3, 'exercise-results-1-3');
+            const checkBtn1_3 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-01-exercise-1-3"]');
+            if (checkBtn1_3) {
+                checkBtn1_3.addEventListener('click', () => handleCheckAnswer('chapter-01-exercise-1-3', 'exercise-editor-1-3', 'exercise-results-1-3'));
+                 if (isExerciseCompleted('chapter-01', 'chapter-01-exercise-1-3')) {
+                    getElementById('chapter-01-exercise-1-3').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+
+            setupEditorThemeListener();
+
+            // Mark chapter as visited for progress tracking (simple version)
+            // You might want more sophisticated logic for actual completion.
+            // setChapterCompleted('chapter-01', true);
+        });
+
+        // Ensure editors resize when window resizes
+        window.addEventListener('resize', () => {
+            for (const editorId in editors) {
+                if (editors[editorId]) {
+                    editors[editorId].layout();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

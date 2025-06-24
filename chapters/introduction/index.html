@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction - The SQL Path</title>
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+    <!-- Main stylesheet for general layout and responsiveness -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Theme stylesheet for dark/light mode variables and transitions -->
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - Inter for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Chapter-specific styles for better content presentation (replicated from other chapters for consistency) */
+        .chapter-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .breadcrumbs {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--nav-link-color);
+        }
+
+        .breadcrumbs a {
+            color: var(--nav-link-color);
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .chapter-title {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-intro {
+            font-size: 1.15rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            max-width: 850px;
+            line-height: 1.7;
+        }
+
+        .chapter-section {
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+        }
+
+        .chapter-section h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .chapter-section h3 {
+            font-size: 1.6rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-section p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .code-block-container {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            background-color: var(--code-bg-color);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--code-border-color);
+            overflow: hidden;
+        }
+
+        .code-editor {
+            height: 200px; /* Default height for the Monaco editor */
+            width: 100%;
+            border-bottom: 1px solid var(--code-border-color);
+        }
+
+        .editor-actions {
+            padding: 0.8rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .query-results {
+            background-color: var(--content-bg-color);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            min-height: 50px;
+            max-height: 300px;
+            overflow: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            border-bottom-left-radius: var(--border-radius-md);
+            border-bottom-right-radius: var(--border-radius-md);
+        }
+
+        .query-results table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        .query-results th, .query-results td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .query-results th {
+            background-color: var(--primary-color);
+            color: var(--button-text-color);
+            font-weight: 600;
+        }
+
+        .exercise-section { /* Used for general interactive sections now */
+            margin-top: 3rem;
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+        }
+
+        .exercise-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-item { /* Renamed for general interactive components if needed, or stick to chapter-section */
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            background-color: var(--background-color); /* Lighter background for exercises */
+        }
+
+        .exercise-item h3 {
+            margin-top: 0;
+            color: var(--heading-color);
+            font-size: 1.3rem;
+        }
+
+        .exercise-item p {
+            margin-bottom: 1rem;
+        }
+
+        .database-schema {
+            background-color: var(--code-bg-color);
+            padding: 1.5rem;
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--code-border-color);
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .database-schema h4 {
+            color: var(--heading-color);
+            margin-top: 0;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 0.3rem;
+        }
+        .database-schema p {
+            margin-bottom: 0.5rem;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95rem;
+            color: var(--text-color);
+        }
+        .database-schema ul {
+            list-style: inside circle;
+            padding-left: 1rem;
+            margin-top: 0.5rem;
+        }
+        .database-schema ul li {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-bottom: 0.2rem;
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chapter-title {
+                font-size: 2rem;
+            }
+            .chapter-intro {
+                font-size: 1rem;
+            }
+            .chapter-section {
+                padding: 1.5rem;
+            }
+            .chapter-section h2 {
+                font-size: 1.8rem;
+            }
+            .chapter-section h3 {
+                font-size: 1.4rem;
+            }
+            .editor-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .editor-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../../index.html">The SQL Path</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../../index.html#chapters">Chapters</a></li>
+                    <li><a href="../../index.html#about">About</a></li>
+                    <li><a href="../../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon for theme toggle - will be set by JavaScript -->
+                    <span class="icon">💡</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="chapter-main">
+        <div class="container chapter-container">
+            <nav class="breadcrumbs">
+                <a href="../../index.html">Home</a> &gt; <a href="../../index.html#chapters">Chapters</a> &gt; <span>Introduction</span>
+            </nav>
+
+            <h1 class="chapter-title">Welcome to The SQL Path!</h1>
+            <p class="chapter-intro">Are you ready to unlock the secrets hidden within data? Structured Query Language (SQL) is the universal language for interacting with relational databases, and mastering it is a fundamental skill for anyone working with data, from analysts to developers. "The SQL Path" is designed to guide you from SQL novice to a confident data explorer, all within your browser, with no complicated setup required.</p>
+
+            <section class="chapter-section">
+                <h2>What is SQL?</h2>
+                <p>SQL stands for **Structured Query Language**. It's a powerful and widely-used language for managing and manipulating relational databases. Think of a database as an organized collection of information, like a digital filing cabinet. SQL allows you to:</p>
+                <ul>
+                    <li>**Retrieve (Query) Data:** Ask specific questions to get the exact information you need (e.g., "Show me all customers from USA").</li>
+                    <li>**Manipulate Data:** Add new information, update existing records, or delete old ones.</li>
+                    <li>**Define Data Structures:** Create, modify, or delete the tables and relationships that store your data.</li>
+                </ul>
+                <p>Learning SQL opens doors to countless career opportunities in data analysis, business intelligence, data science, and software development.</p>
+            </section>
+
+            <section class="chapter-section">
+                <h2>Why "The SQL Path"?</h2>
+                <p>"The SQL Path" offers a state-of-the-art learning experience tailored for aspiring data professionals:</p>
+                <ul>
+                    <li>**Completely Interactive:** Forget static code snippets. Every chapter includes live, runnable SQL editors where you can write, execute, and experiment with queries directly.</li>
+                    <li>**No Setup Required:** This entire platform runs purely in your web browser. There's no software to install, no backend servers to configure. Your SQL database runs client-side thanks to the amazing <a href="https://sql.js.org/" target="_blank">SQL.js</a> library, compiled to WebAssembly.</li>
+                    <li>**Powered by Monaco Editor:** The same powerful code editor found in Visual Studio Code is embedded here, providing features like syntax highlighting and intelligent auto-completion for SQL.</li>
+                    <li>**Hands-on Exercises:** Each chapter concludes with practical exercises, complete with automated answer checking, to solidify your understanding.</li>
+                    <li>**Progress Tracking:** Your exercise completions are saved in your browser's local storage, allowing you to pick up right where you left off.</li>
+                </ul>
+            </section>
+
+            <section class="chapter-section">
+                <h2>How This Course Works</h2>
+                <p>Each chapter in "The SQL Path" is structured to provide a clear, progressive learning experience:</p>
+                <ol>
+                    <li>**Concepts and Explanations:** Clear, concise explanations of new SQL commands and concepts.</li>
+                    <li>**Interactive Code Examples:** Live SQL editors where you can run the provided example queries, modify them, and see the results instantly.</li>
+                    <li>**Hands-on Exercises:** Practice problems at the end of each chapter, designed to challenge your understanding. Solve them in the integrated editor and click "Check Answer" for instant feedback.</li>
+                    <li>**Skill Checkpoints:** Throughout the course, "Skill Checkpoints" (represented by completed exercises) help you measure your progress.</li>
+                </ol>
+                <p>We recommend going through the chapters in order, as each builds upon previous knowledge. Don't be afraid to experiment with the code editors – that's how you truly learn!</p>
+            </section>
+
+            <section class="chapter-section">
+                <h2>The Databites Database Schema</h2>
+                <p>Throughout this course, you'll be working with a simulated e-commerce database called "Databites." This database consists of four interconnected tables:</p>
+
+                <div class="database-schema">
+                    <h4>Customers Table</h4>
+                    <p>Stores information about individual customers.</p>
+                    <ul>
+                        <li><code>customer_id</code> (INTEGER, **Primary Key**)</li>
+                        <li><code>first_name</code> (TEXT)</li>
+                        <li><code>last_name</code> (TEXT)</li>
+                        <li><code>email</code> (TEXT)</li>
+                        <li><code>registration_date</code> (TEXT)</li>
+                        <li><code>country</code> (TEXT)</li>
+                    </ul>
+
+                    <h4>Products Table</h4>
+                    <p>Contains details about the products sold by Databites.</p>
+                    <ul>
+                        <li><code>product_id</code> (INTEGER, **Primary Key**)</li>
+                        <li><code>product_name</code> (TEXT)</li>
+                        <li><code>category</code> (TEXT)</li>
+                        <li><code>price</code> (REAL)</li>
+                        <li><code>stock_quantity</code> (INTEGER)</li>
+                    </ul>
+
+                    <h4>Orders Table</h4>
+                    <p>Records information about each order placed by customers.</p>
+                    <ul>
+                        <li><code>order_id</code> (INTEGER, **Primary Key**)</li>
+                        <li><code>customer_id</code> (INTEGER, **Foreign Key** referencing <code>Customers.customer_id</code>)</li>
+                        <li><code>order_date</code> (TEXT)</li>
+                        <li><code>total_amount</code> (REAL)</li>
+                        <li><code>status</code> (TEXT)</li>
+                        <li><code>shipping_address</code> (TEXT)</li>
+                    </ul>
+
+                    <h4>OrderItems Table</h4>
+                    <p>Links orders to the specific products included in them, detailing quantities and item prices.</p>
+                    <ul>
+                        <li><code>order_item_id</code> (INTEGER, **Primary Key**)</li>
+                        <li><code>order_id</code> (INTEGER, **Foreign Key** referencing <code>Orders.order_id</code>)</li>
+                        <li><code>product_id</code> (INTEGER, **Foreign Key** referencing <code>Products.product_id</code>)</li>
+                        <li><code>quantity</code> (INTEGER)</li>
+                        <li><code>item_price</code> (REAL)</li>
+                    </ul>
+                </div>
+
+                <p>As you progress, you'll learn to query, join, and analyze data from these tables to gain business insights.</p>
+
+                <h3>Let's Get Started! Explore the Database:</h3>
+                <p>Use the editor below to run your very first SQL queries. Try to see all tables, or get a glimpse of the `Customers` table.</p>
+                <div class="code-block-container">
+                    <div id="editor-intro-1" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-intro-1">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-intro-1">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Try these queries:</p>
+                <ul>
+                    <li>`SELECT * FROM Customers LIMIT 5;` (Shows the first 5 rows of Customers)</li>
+                    <li>`.tables` (Shows all table names in SQLite)</li>
+                    <li>`SELECT name FROM sqlite_master WHERE type='table';` (Another way to list tables)</li>
+                </ul>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> The SQL Path. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global scripts: main.js handles theme toggle, etc. -->
+    <script type="module" src="../../assets/js/main.js"></script>
+
+    <!-- Chapter-specific scripts for SQL Editor and Database interaction -->
+    <script type="module">
+        import { loadMonacoEditor, initializeMonacoEditor } from '../../assets/js/code-editor.js';
+        import { initializeDatabase, executeSql } from '../../assets/js/sql-engine.js';
+        import { getElementById, createElement, emptyElement } from '../../assets/js/utils.js';
+
+        // Initial SQL content for the demonstration editor
+        const initialQueryIntro1 = `SELECT * FROM Customers LIMIT 5;`;
+
+        // Keep track of editors
+        const editors = {};
+
+        /**
+         * Renders query results in a table format.
+         * @param {HTMLElement} resultsContainer The DOM element to render results into.
+         * @param {Array<string>} columns Array of column names.
+         * @param {Array<Array<any>>} rows Array of data rows.
+         */
+        function renderResults(resultsContainer, columns, rows) {
+            emptyElement(resultsContainer); // Clear previous results
+
+            if (!columns || columns.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No columns returned.' }));
+                return;
+            }
+            if (!rows || rows.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No rows returned.' }));
+                return;
+            }
+
+            const table = createElement('table');
+            const thead = createElement('thead');
+            const tbody = createElement('tbody');
+
+            // Create table header
+            const headerRow = createElement('tr');
+            columns.forEach(col => {
+                headerRow.appendChild(createElement('th', { textContent: col }));
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            rows.forEach(rowData => {
+                const row = createElement('tr');
+                rowData.forEach(cellData => {
+                    row.appendChild(createElement('td', { textContent: cellData === null ? 'NULL' : cellData.toString() }));
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            resultsContainer.appendChild(table);
+        }
+
+        /**
+         * Displays a message in the results container.
+         * @param {HTMLElement} resultsContainer The DOM element to display message in.
+         * @param {string} message The message text.
+         * @param {boolean} isError If true, styles the message as an error.
+         */
+        function displayMessage(resultsContainer, message, isError = false) {
+            emptyElement(resultsContainer);
+            const p = createElement('p', { textContent: message });
+            if (isError) {
+                p.style.color = 'var(--primary-color)';
+                p.style.fontWeight = 'bold';
+            }
+            resultsContainer.appendChild(p);
+        }
+
+        /**
+         * Handles the execution of a SQL query from an editor.
+         * @param {string} editorId The ID of the Monaco editor instance.
+         * @param {string} resultsId The ID of the div where results should be displayed.
+         */
+        async function handleRunQuery(editorId, resultsId) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+
+            if (!editor || !resultsContainer) {
+                console.error(`Editor (${editorId}) or results container (${resultsId}) not found.`);
+                return;
+            }
+
+            const query = editor.getValue();
+            if (!query.trim()) {
+                displayMessage(resultsContainer, 'Please enter a SQL query to execute.', true);
+                return;
+            }
+
+            // Special handling for SQLite-specific meta commands like ".tables"
+            if (query.trim().toLowerCase() === '.tables') {
+                try {
+                    // SQLite's .tables is equivalent to selecting from sqlite_master
+                    const tablesQuery = "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;";
+                    const result = executeSql(tablesQuery);
+                    if (result.error) {
+                        displayMessage(resultsContainer, `Error listing tables: ${result.error}`, true);
+                    } else {
+                        renderResults(resultsContainer, result.columns, result.rows);
+                    }
+                } catch (e) {
+                    displayMessage(resultsContainer, `An error occurred while trying to list tables: ${e.message}`, true);
+                }
+                return; // Exit after handling .tables
+            }
+
+
+            displayMessage(resultsContainer, 'Executing query...', false);
+
+            try {
+                const result = executeSql(query);
+
+                if (result.error) {
+                    displayMessage(resultsContainer, `Error: ${result.error}`, true);
+                } else if (result.isSelect) {
+                    renderResults(resultsContainer, result.columns, result.rows);
+                } else {
+                    displayMessage(resultsContainer, result.message || 'Command executed successfully.', false);
+                }
+            } catch (e) {
+                console.error('Unexpected error during query execution:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred: ${e.message}`, true);
+            }
+        }
+
+        /**
+         * Initializes an individual editor and sets up its run button.
+         * @param {string} editorId The ID of the editor container.
+         * @param {string} initialContent The default content for the editor.
+         * @param {string} resultsId The ID of the results container.
+         */
+        function setupEditorAndRunButton(editorId, initialContent, resultsId) {
+            const editorDiv = getElementById(editorId);
+            if (editorDiv) {
+                editors[editorId] = initializeMonacoEditor(editorId, initialContent, document.documentElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light');
+
+                const runButton = document.querySelector(`button.run-query-btn[data-editor-id="${editorId}"]`);
+                if (runButton) {
+                    runButton.addEventListener('click', () => handleRunQuery(editorId, resultsId));
+                }
+            }
+        }
+
+        /**
+         * Sets up the theme change listener for all editors.
+         */
+        function setupEditorThemeListener() {
+            const htmlElement = document.documentElement;
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                        const newTheme = htmlElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light';
+                        for (const editorId in editors) {
+                            if (editors[editorId]) {
+                                editors[editorId].updateOptions({ theme: newTheme });
+                            }
+                        }
+                    }
+                });
+            });
+            observer.observe(htmlElement, { attributes: true });
+        }
+
+
+        // DOM Content Loaded Handler
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Introduction: DOM Content Loaded.');
+
+            // Initialize the database for this chapter
+            try {
+                await initializeDatabase(); // Loads databites.db or builds from scripts
+            } catch (e) {
+                console.error("Failed to initialize database for Introduction:", e);
+                displayMessage(getElementById('results-intro-1'), `Failed to load database: ${e.message}. Interactive exercises might not work.`, true);
+                return; // Stop further initialization if DB fails
+            }
+
+            // Load Monaco Editor
+            try {
+                await loadMonacoEditor();
+            } catch (e) {
+                console.error("Failed to load Monaco Editor for Introduction:", e);
+                displayMessage(getElementById('results-intro-1'), `Failed to load code editor: ${e.message}. Code interaction will not work.`, true);
+                return; // Stop further initialization if editor fails
+            }
+
+            // Set up demonstration editor
+            setupEditorAndRunButton('editor-intro-1', initialQueryIntro1, 'results-intro-1');
+
+            setupEditorThemeListener();
+        });
+
+        // Ensure editors resize when window resizes
+        window.addEventListener('resize', () => {
+            for (const editorId in editors) {
+                if (editors[editorId]) {
+                    editors[editorId].layout();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

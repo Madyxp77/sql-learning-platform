@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 8: Advanced Analytics – Window Functions - The SQL Path</title>
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+    <!-- Main stylesheet for general layout and responsiveness -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Theme stylesheet for dark/light mode variables and transitions -->
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - Inter for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Chapter-specific styles for better content presentation (replicated from previous chapters for consistency) */
+        .chapter-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .breadcrumbs {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--nav-link-color);
+        }
+
+        .breadcrumbs a {
+            color: var(--nav-link-color);
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .chapter-title {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-intro {
+            font-size: 1.15rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            max-width: 850px;
+            line-height: 1.7;
+        }
+
+        .chapter-section {
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+        }
+
+        .chapter-section h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .chapter-section h3 {
+            font-size: 1.6rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-section p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .code-block-container {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            background-color: var(--code-bg-color);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--code-border-color);
+            overflow: hidden;
+        }
+
+        .code-editor {
+            height: 200px; /* Default height for the Monaco editor */
+            width: 100%;
+            border-bottom: 1px solid var(--code-border-color);
+        }
+
+        .editor-actions {
+            padding: 0.8rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .query-results {
+            background-color: var(--content-bg-color);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            min-height: 50px;
+            max-height: 300px;
+            overflow: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            border-bottom-left-radius: var(--border-radius-md);
+            border-bottom-right-radius: var(--border-radius-md);
+        }
+
+        .query-results table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        .query-results th, .query-results td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .query-results th {
+            background-color: var(--primary-color);
+            color: var(--button-text-color);
+            font-weight: 600;
+        }
+
+        .exercise-section {
+            margin-top: 3rem;
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+        }
+
+        .exercise-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            background-color: var(--background-color); /* Lighter background for exercises */
+        }
+
+        .exercise-item h3 {
+            margin-top: 0;
+            color: var(--heading-color);
+            font-size: 1.3rem;
+        }
+
+        .exercise-item p {
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chapter-title {
+                font-size: 2rem;
+            }
+            .chapter-intro {
+                font-size: 1rem;
+            }
+            .chapter-section {
+                padding: 1.5rem;
+            }
+            .chapter-section h2 {
+                font-size: 1.8rem;
+            }
+            .chapter-section h3 {
+                font-size: 1.4rem;
+            }
+            .editor-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .editor-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../../index.html">The SQL Path</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../../index.html#chapters">Chapters</a></li>
+                    <li><a href="../../index.html#about">About</a></li>
+                    <li><a href="../../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon for theme toggle - will be set by JavaScript -->
+                    <span class="icon">💡</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="chapter-main">
+        <div class="container chapter-container">
+            <nav class="breadcrumbs">
+                <a href="../../index.html">Home</a> &gt; <a href="../../index.html#chapters">Chapters</a> &gt; <span>Chapter 8</span>
+            </nav>
+
+            <h1 class="chapter-title">Chapter 8: Advanced Analytics – Window Functions</h1>
+            <p class="chapter-intro">You've mastered aggregations to summarize data into single rows per group. But what if you want to perform calculations over a set of rows *without* collapsing them into a single summary row, allowing you to see both the individual detail and the group context? This is the power of **Window Functions**. They perform calculations across a set of table rows that are somehow related to the current row, returning a result for each row.</p>
+
+            <section class="chapter-section">
+                <h2>8.1 Introduction to Window Functions and `OVER()` Clause</h2>
+                <p>A window function performs an aggregate-like calculation over a "window" or set of rows. Unlike `GROUP BY`, window functions do not reduce the number of rows returned. Instead, they add a new column to the result set containing the calculation for each original row.</p>
+                <p>The core of a window function is the `OVER()` clause, which defines the "window" or set of rows the function operates on. It can include:</p>
+                <ul>
+                    <li>`PARTITION BY`: Divides the rows into groups (partitions) where the window function is applied independently to each partition.</li>
+                    <li>`ORDER BY`: Specifies the logical order of rows within each partition. This is crucial for ranking functions and functions like `LAG()` and `LEAD()`.</li>
+                </ul>
+                <p>Let's start by calculating a running sum of `total_amount` for all orders, ordered by `order_date`.</p>
+                <div class="code-block-container">
+                    <div id="editor-8-1" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-8-1">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-8-1">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>8.2 Ranking Functions: `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`</h2>
+                <p>Ranking functions assign a rank to each row within a partition of a result set. They are commonly used for "top N per group" problems or simply to understand position within an ordered set.</p>
+                <ul>
+                    <li>`ROW_NUMBER()`: Assigns a unique, sequential integer to each row within its partition, starting at 1. It does not skip numbers if values are tied.</li>
+                    <li>`RANK()`: Assigns a rank to each row within its partition. If rows have identical values, they receive the same rank, and the next rank is skipped (e.g., 1, 1, 3).</li>
+                    <li>`DENSE_RANK()`: Similar to `RANK()`, but it does not skip numbers in the ranking sequence when there are ties (e.g., 1, 1, 2).</li>
+                </ul>
+                <p>Let's rank orders by `total_amount` within each `customer_id` using `ROW_NUMBER()`.</p>
+                <div class="code-block-container">
+                    <div id="editor-8-2" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-8-2">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-8-2">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Now, let's see `RANK()` vs. `DENSE_RANK()` by ranking products within their `category` based on `price`.</p>
+                <div class="code-block-container">
+                    <div id="editor-8-3" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-8-3">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-8-3">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>8.3 Analytical Functions: `LAG()` and `LEAD()`</h2>
+                <p>`LAG()` and `LEAD()` are powerful window functions that allow you to access data from a previous (`LAG()`) or next (`LEAD()`) row in the same result set without resorting to self-joins. This is invaluable for time-series analysis or comparing adjacent records.</p>
+                <ul>
+                    <li>`LAG(expression, offset, default_value)`: Returns the value of `expression` from a row that is `offset` rows before the current row within the partition. `default_value` is returned if `offset` goes beyond the partition.</li>
+                    <li>`LEAD(expression, offset, default_value)`: Returns the value of `expression` from a row that is `offset` rows after the current row within the partition.</li>
+                </ul>
+                <p>Let's calculate the `total_amount` of the previous order for each customer, ordered by `order_date`.</p>
+                <div class="code-block-container">
+                    <div id="editor-8-4" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-8-4">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-8-4">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Now, let's find the `total_amount` of the next order for each customer.</p>
+                <div class="code-block-container">
+                    <div id="editor-8-5" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-8-5">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-8-5">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>8.4 Frame Clauses (`ROWS` / `RANGE` and `UNBOUNDED PRECEDING / FOLLOWING`)</h2>
+                <p>When using aggregate functions as window functions (e.g., `SUM()`, `AVG()`), the `OVER()` clause can also define a "frame" within the partition. This frame specifies the subset of rows within the partition that the function operates on for the current row. Common frame types include:</p>
+                <ul>
+                    <li>`ROWS UNBOUNDED PRECEDING`: Includes all rows from the start of the partition up to the current row. (Useful for running totals)</li>
+                    <li>`ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`: Explicitly defines the above.</li>
+                    <li>`ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING`: Includes the row before, the current row, and the row after. (Useful for moving averages)</li>
+                </ul>
+                <p>Let's calculate the running total of `total_amount` for each customer, ordered by `order_date`.</p>
+                <div class="code-block-container">
+                    <div id="editor-8-6" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-8-6">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-8-6">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Now, let's find the 3-order moving average of `total_amount` for each customer (including the current order and the two previous). This involves defining a frame of `ROWS BETWEEN 2 PRECEDING AND CURRENT ROW`.</p>
+                <div class="code-block-container">
+                    <div id="editor-8-7" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-8-7">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-8-7">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="exercise-section">
+                <h2>Chapter 8 Exercises</h2>
+                <p>Apply your knowledge of window functions to derive advanced insights from the Databites data.</p>
+
+                <div class="exercise-item" data-exercise-id="chapter-08-exercise-8-1">
+                    <h3>Exercise 8.1: Customer Order Ranks</h3>
+                    <p>For each customer, rank their orders by `total_amount` in descending order. If two orders have the same `total_amount`, they should receive the same rank, and the next rank should *not* be skipped (e.g., 1, 1, 2). Display `customer_id`, `order_id`, `total_amount`, and the new `order_rank` column. Order the final results by `customer_id` and then `order_rank`.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-8-1" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-8-1">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-08-exercise-8-1">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-8-1">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-08-exercise-8-2">
+                    <h3>Exercise 8.2: Percentage of Customer's Total Spending</h3>
+                    <p>For each order, calculate what percentage of the customer's *total spending* that particular order represents. Display `customer_id`, `order_id`, `total_amount`, and `percentage_of_total_spend`. Round the percentage to two decimal places. Order by `customer_id` and `order_date`.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-8-2" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-8-2">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-08-exercise-8-2">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-8-2">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-08-exercise-8-3">
+                    <h3>Exercise 8.3: Gap Between Orders</h3>
+                    <p>For each customer, find the number of days between the current order date and their previous order date. Display `customer_id`, `order_id`, `order_date`, and `days_since_previous_order`. For the first order of each customer, `days_since_previous_order` should be `NULL`. Order by `customer_id` and `order_date`.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-8-3" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-8-3">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-08-exercise-8-3">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-8-3">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> The SQL Path. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global scripts: main.js handles theme toggle, etc. -->
+    <script type="module" src="../../assets/js/main.js"></script>
+
+    <!-- Chapter-specific scripts for SQL Editor and Database interaction -->
+    <script type="module">
+        import { loadMonacoEditor, initializeMonacoEditor, getEditorContent, setEditorContent } from '../../assets/js/code-editor.js';
+        import { initializeDatabase, executeSql } from '../../assets/js/sql-engine.js';
+        import { setExerciseCompleted, isExerciseCompleted } from '../../assets/js/progress-tracking.js';
+        import { getElementById, createElement, emptyElement } from '../../assets/js/utils.js';
+
+        // Initial SQL content for the demonstration editors
+        const initialQuery8_1 = `SELECT
+    order_id,
+    order_date,
+    total_amount,
+    SUM(total_amount) OVER (ORDER BY order_date) AS running_total
+FROM Orders
+ORDER BY order_date;`;
+        const initialQuery8_2 = `SELECT
+    order_id,
+    customer_id,
+    total_amount,
+    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY total_amount DESC) AS rn
+FROM Orders
+ORDER BY customer_id, rn;`;
+        const initialQuery8_3 = `SELECT
+    product_name,
+    category,
+    price,
+    RANK() OVER (PARTITION BY category ORDER BY price DESC) AS rank_by_category_price,
+    DENSE_RANK() OVER (PARTITION BY category ORDER BY price DESC) AS dense_rank_by_category_price
+FROM Products
+ORDER BY category, price DESC;`;
+        const initialQuery8_4 = `SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    LAG(total_amount, 1, 0) OVER (PARTITION BY customer_id ORDER BY order_date) AS previous_order_amount
+FROM Orders
+ORDER BY customer_id, order_date;`;
+        const initialQuery8_5 = `SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    LEAD(total_amount, 1, 0) OVER (PARTITION BY customer_id ORDER BY order_date) AS next_order_amount
+FROM Orders
+ORDER BY customer_id, order_date;`;
+        const initialQuery8_6 = `SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    SUM(total_amount) OVER (PARTITION BY customer_id ORDER BY order_date ROWS UNBOUNDED PRECEDING) AS running_total_per_customer
+FROM Orders
+ORDER BY customer_id, order_date;`;
+        const initialQuery8_7 = `SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    AVG(total_amount) OVER (PARTITION BY customer_id ORDER BY order_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS moving_avg_3_orders
+FROM Orders
+ORDER BY customer_id, order_date;`;
+
+
+        // Initial SQL content for exercises
+        const initialExercise8_1 = `SELECT
+    customer_id,
+    order_id,
+    total_amount,
+    DENSE_RANK() OVER (PARTITION BY customer_id ORDER BY total_amount DESC) AS order_rank
+FROM Orders
+ORDER BY customer_id ASC, order_rank ASC;`;
+        const initialExercise8_2 = `SELECT
+    customer_id,
+    order_id,
+    total_amount,
+    ROUND((total_amount * 100.0) / SUM(total_amount) OVER (PARTITION BY customer_id), 2) AS percentage_of_total_spend
+FROM Orders
+ORDER BY customer_id ASC, order_date ASC;`;
+        const initialExercise8_3 = `SELECT
+    customer_id,
+    order_id,
+    order_date,
+    JULIANDAY(order_date) - JULIANDAY(LAG(order_date, 1) OVER (PARTITION BY customer_id ORDER BY order_date)) AS days_since_previous_order
+FROM Orders
+ORDER BY customer_id ASC, order_date ASC;`;
+
+
+        // Keep track of editors
+        const editors = {};
+
+        /**
+         * Renders query results in a table format.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function renderResults(resultsContainer, columns, rows) {
+            emptyElement(resultsContainer); // Clear previous results
+
+            if (!columns || columns.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No columns returned.' }));
+                return;
+            }
+            if (!rows || rows.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No rows returned.' }));
+                return;
+            }
+
+            const table = createElement('table');
+            const thead = createElement('thead');
+            const tbody = createElement('tbody');
+
+            // Create table header
+            const headerRow = createElement('tr');
+            columns.forEach(col => {
+                headerRow.appendChild(createElement('th', { textContent: col }));
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            rows.forEach(rowData => {
+                const row = createElement('tr');
+                rowData.forEach(cellData => {
+                    // Handle NULL values, format numbers if needed (e.g., for rounded percentages)
+                    let displayData = cellData;
+                    if (cellData === null) {
+                        displayData = 'NULL';
+                    } else if (typeof cellData === 'number' && !Number.isInteger(cellData)) {
+                        // For numbers that are not integers, round to 2 decimal places for display consistency
+                        displayData = cellData.toFixed(2);
+                    }
+                    row.appendChild(createElement('td', { textContent: displayData.toString() }));
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            resultsContainer.appendChild(table);
+        }
+
+        /**
+         * Displays a message in the results container.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function displayMessage(resultsContainer, message, isError = false) {
+            emptyElement(resultsContainer);
+            const p = createElement('p', { textContent: message });
+            if (isError) {
+                p.style.color = 'var(--primary-color)';
+                p.style.fontWeight = 'bold';
+            }
+            resultsContainer.appendChild(p);
+        }
+
+        /**
+         * Handles the execution of a SQL query from an editor.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        async function handleRunQuery(editorId, resultsId) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+
+            if (!editor || !resultsContainer) {
+                console.error(`Editor (${editorId}) or results container (${resultsId}) not found.`);
+                return;
+            }
+
+            const query = editor.getValue();
+            if (!query.trim()) {
+                displayMessage(resultsContainer, 'Please enter a SQL query to execute.', true);
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Executing query...', false);
+
+            try {
+                const result = executeSql(query);
+
+                if (result.error) {
+                    displayMessage(resultsContainer, `Error: ${result.error}`, true);
+                } else if (result.isSelect) {
+                    renderResults(resultsContainer, result.columns, result.rows);
+                } else {
+                    displayMessage(resultsContainer, result.message || 'Command executed successfully.', false);
+                }
+            } catch (e) {
+                console.error('Unexpected error during query execution:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred: ${e.message}`, true);
+            }
+        }
+
+        /**
+         * Initializes an individual editor and sets up its run button.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorAndRunButton(editorId, initialContent, resultsId) {
+            const editorDiv = getElementById(editorId);
+            if (editorDiv) {
+                editors[editorId] = initializeMonacoEditor(editorId, initialContent, document.documentElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light');
+
+                const runButton = document.querySelector(`button.run-query-btn[data-editor-id="${editorId}"]`);
+                if (runButton) {
+                    runButton.addEventListener('click', () => handleRunQuery(editorId, resultsId));
+                }
+            }
+        }
+
+        /**
+         * Sets up the theme change listener for all editors.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorThemeListener() {
+            const htmlElement = document.documentElement;
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                        const newTheme = htmlElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light';
+                        for (const editorId in editors) {
+                            if (editors[editorId]) {
+                                editors[editorId].updateOptions({ theme: newTheme });
+                            }
+                        }
+                    }
+                });
+            });
+            observer.observe(htmlElement, { attributes: true });
+        }
+
+        /**
+         * Compares two 2D arrays (results from SQL queries).
+         * This version is specifically tuned for window functions where both column and row order are crucial.
+         * It also handles potential floating point differences by rounding.
+         * @param {Array<string>} userColumns User's query columns.
+         * @param {Array<Array<any>>} userRows User's query rows.
+         * @param {Array<string>} expectedColumns Expected query columns.
+         * @param {Array<Array<any>>} expectedRows Expected query rows.
+         * @returns {boolean} True if results match, false otherwise.
+         */
+        function compareQueryResults(userColumns, userRows, expectedColumns, expectedRows) {
+            // 1. Check column count and names (order matters for window functions typically)
+            if (userColumns.length !== expectedColumns.length) {
+                console.log("Column count mismatch.");
+                return false;
+            }
+            if (JSON.stringify(userColumns) !== JSON.stringify(expectedColumns)) {
+                console.log("Column names or their order mismatch.");
+                return false;
+            }
+
+            // 2. Check row count
+            if (userRows.length !== expectedRows.length) {
+                console.log(`Row count mismatch. Expected ${expectedRows.length}, got ${userRows.length}.`);
+                return false;
+            }
+
+            // 3. Deep compare rows, handling potential floating point differences and NULLs
+            for (let r = 0; r < userRows.length; r++) {
+                if (userRows[r].length !== expectedRows[r].length) {
+                    console.log(`Cell count mismatch in row ${r}.`);
+                    return false;
+                }
+                for (let c = 0; c < userRows[r].length; c++) {
+                    const userCell = userRows[r][c];
+                    const expectedCell = expectedRows[r][c];
+
+                    // Handle NULLs
+                    if (userCell === null && expectedCell === null) {
+                        continue; // Both are NULL, consider them equal
+                    }
+                    if (userCell === null || expectedCell === null) {
+                        console.log(`NULL mismatch at row ${r}, col ${c}.`);
+                        return false; // One is NULL, other is not
+                    }
+
+                    // For numbers, compare with a tolerance for floating-point inaccuracies
+                    if (typeof userCell === 'number' && typeof expectedCell === 'number') {
+                        if (Math.abs(userCell - expectedCell) > 0.0001) { // Tolerance of 0.0001
+                            console.log(`Numeric mismatch at row ${r}, col ${c}. User: ${userCell}, Expected: ${expectedCell}`);
+                            return false;
+                        }
+                    } else if (String(userCell) !== String(expectedCell)) {
+                        // For other types, direct string comparison after ensuring they are strings
+                        console.log(`Value mismatch at row ${r}, col ${c}. User: ${String(userCell)}, Expected: ${String(expectedCell)}`);
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+
+        /**
+         * Handles the "Check Answer" functionality for exercises.
+         * @param {string} exerciseId The unique ID of the exercise.
+         * @param {string} editorId The ID of the associated editor.
+         * @param {string} resultsId The ID of the associated results container.
+         * @param {string} expectedQuery The correct SQL query for validation.
+         * @param {boolean} [requiresSelect=true] If true, validates only SELECT queries.
+         */
+        async function handleCheckAnswer(exerciseId, editorId, resultsId, expectedQuery, requiresSelect = true) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+            const exerciseItemElement = getElementById(exerciseId);
+
+            if (!editor || !resultsContainer || !exerciseItemElement) {
+                console.error(`Elements for exercise check not found: Editor(${editorId}), Results(${resultsId}), Item(${exerciseId}).`);
+                return;
+            }
+
+            const userQuery = editor.getValue();
+            if (!userQuery.trim()) {
+                displayMessage(resultsContainer, 'Please write your query before checking the answer.', true);
+                setExerciseCompleted(exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Checking your answer...', false);
+
+            try {
+                const userResult = executeSql(userQuery);
+
+                if (userResult.error) {
+                    displayMessage(resultsContainer, `Your query has an error: ${userResult.error}`, true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                if (requiresSelect && !userResult.isSelect) {
+                    displayMessage(resultsContainer, 'Please provide a SELECT query to check your answer.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                const expectedResult = executeSql(expectedQuery);
+
+                if (expectedResult.error) {
+                    console.error('Error in expected query for exercise validation:', expectedResult.error);
+                    displayMessage(resultsContainer, 'An internal error occurred while validating the exercise. Please try again later.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                let isCorrect = false;
+                if (requiresSelect) {
+                    isCorrect = compareQueryResults(userResult.columns, userResult.rows, expectedResult.columns, expectedResult.rows);
+                } else {
+                    isCorrect = !userResult.error;
+                }
+
+                if (isCorrect) {
+                    displayMessage(resultsContainer, '🎉 Correct! Well done!', false);
+                    setExerciseCompleted('chapter-08', exerciseId, true); // Mark as completed for chapter 08
+                    exerciseItemElement.style.border = '2px solid var(--primary-color)'; // Visual feedback
+                } else {
+                    displayMessage(resultsContainer, '❌ Incorrect. Review your query and try again.', true);
+                    setExerciseCompleted('chapter-08', exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)'; // Reset border
+                }
+
+                renderResults(resultsContainer, userResult.columns, userResult.rows);
+
+            } catch (e) {
+                console.error('Error during exercise check:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred during check: ${e.message}`, true);
+                setExerciseCompleted('chapter-08', exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+            }
+        }
+
+
+        // DOM Content Loaded Handler
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Chapter 8: DOM Content Loaded.');
+
+            // Initialize the database for this chapter
+            try {
+                await initializeDatabase();
+            } catch (e) {
+                console.error("Failed to initialize database for Chapter 8:", e);
+                displayMessage(getElementById('results-8-1'), `Failed to load database: ${e.message}. Interactive exercises might not work.`, true);
+                return;
+            }
+
+            // Load Monaco Editor
+            try {
+                await loadMonacoEditor();
+            } catch (e) {
+                console.error("Failed to load Monaco Editor for Chapter 8:", e);
+                displayMessage(getElementById('results-8-1'), `Failed to load code editor: ${e.message}. Code interaction will not work.`, true);
+                return;
+            }
+
+            // Set up demonstration editors
+            setupEditorAndRunButton('editor-8-1', initialQuery8_1, 'results-8-1');
+            setupEditorAndRunButton('editor-8-2', initialQuery8_2, 'results-8-2');
+            setupEditorAndRunButton('editor-8-3', initialQuery8_3, 'results-8-3');
+            setupEditorAndRunButton('editor-8-4', initialQuery8_4, 'results-8-4');
+            setupEditorAndRunButton('editor-8-5', initialQuery8_5, 'results-8-5');
+            setupEditorAndRunButton('editor-8-6', initialQuery8_6, 'results-8-6');
+            setupEditorAndRunButton('editor-8-7', initialQuery8_7, 'results-8-7');
+
+
+            // Set up exercise editors and their check buttons
+            setupEditorAndRunButton('exercise-editor-8-1', initialExercise8_1, 'exercise-results-8-1');
+            const checkBtn8_1 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-08-exercise-8-1"]');
+            if (checkBtn8_1) {
+                checkBtn8_1.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-08-exercise-8-1',
+                    'exercise-editor-8-1',
+                    'exercise-results-8-1',
+                    `SELECT
+    customer_id,
+    order_id,
+    total_amount,
+    DENSE_RANK() OVER (PARTITION BY customer_id ORDER BY total_amount DESC) AS order_rank
+FROM Orders
+ORDER BY customer_id ASC, order_rank ASC;`
+                ));
+                if (isExerciseCompleted('chapter-08', 'chapter-08-exercise-8-1')) {
+                    getElementById('chapter-08-exercise-8-1').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-8-2', initialExercise8_2, 'exercise-results-8-2');
+            const checkBtn8_2 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-08-exercise-8-2"]');
+            if (checkBtn8_2) {
+                checkBtn8_2.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-08-exercise-8-2',
+                    'exercise-editor-8-2',
+                    'exercise-results-8-2',
+                    `SELECT
+    customer_id,
+    order_id,
+    total_amount,
+    ROUND((total_amount * 100.0) / SUM(total_amount) OVER (PARTITION BY customer_id), 2) AS percentage_of_total_spend
+FROM Orders
+ORDER BY customer_id ASC, order_date ASC;`
+                ));
+                 if (isExerciseCompleted('chapter-08', 'chapter-08-exercise-8-2')) {
+                    getElementById('chapter-08-exercise-8-2').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-8-3', initialExercise8_3, 'exercise-results-8-3');
+            const checkBtn8_3 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-08-exercise-8-3"]');
+            if (checkBtn8_3) {
+                checkBtn8_3.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-08-exercise-8-3',
+                    'exercise-editor-8-3',
+                    'exercise-results-8-3',
+                    `SELECT
+    customer_id,
+    order_id,
+    order_date,
+    JULIANDAY(order_date) - JULIANDAY(LAG(order_date, 1) OVER (PARTITION BY customer_id ORDER BY order_date)) AS days_since_previous_order
+FROM Orders
+ORDER BY customer_id ASC, order_date ASC;`
+                ));
+                 if (isExerciseCompleted('chapter-08', 'chapter-08-exercise-8-3')) {
+                    getElementById('chapter-08-exercise-8-3').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+
+            setupEditorThemeListener();
+        });
+
+        // Ensure editors resize when window resizes
+        window.addEventListener('resize', () => {
+            for (const editorId in editors) {
+                if (editors[editorId]) {
+                    editors[editorId].layout();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

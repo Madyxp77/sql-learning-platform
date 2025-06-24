@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 4: GROUP BY and Aggregate Functions - The SQL Path</title>
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E" />
+    <!-- Main stylesheet for general layout and responsiveness -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- Theme stylesheet for dark/light mode variables and transitions -->
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <!-- Google Fonts - Inter for clean typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Chapter-specific styles for better content presentation (replicated from previous chapters for consistency) */
+        .chapter-container {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .breadcrumbs {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--nav-link-color);
+        }
+
+        .breadcrumbs a {
+            color: var(--nav-link-color);
+            text-decoration: none;
+        }
+
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumbs span {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .chapter-title {
+            font-size: 2.8rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-intro {
+            font-size: 1.15rem;
+            color: var(--text-color);
+            margin-bottom: 2rem;
+            max-width: 850px;
+            line-height: 1.7;
+        }
+
+        .chapter-section {
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2.5rem;
+        }
+
+        .chapter-section h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .chapter-section h3 {
+            font-size: 1.6rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--heading-color);
+        }
+
+        .chapter-section p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .code-block-container {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            background-color: var(--code-bg-color);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--code-border-color);
+            overflow: hidden;
+        }
+
+        .code-editor {
+            height: 200px; /* Default height for the Monaco editor */
+            width: 100%;
+            border-bottom: 1px solid var(--code-border-color);
+        }
+
+        .editor-actions {
+            padding: 0.8rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .query-results {
+            background-color: var(--content-bg-color);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            min-height: 50px;
+            max-height: 300px;
+            overflow: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            border-bottom-left-radius: var(--border-radius-md);
+            border-bottom-right-radius: var(--border-radius-md);
+        }
+
+        .query-results table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        .query-results th, .query-results td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            text-align: left;
+        }
+
+        .query-results th {
+            background-color: var(--primary-color);
+            color: var(--button-text-color);
+            font-weight: 600;
+        }
+
+        .exercise-section {
+            margin-top: 3rem;
+            background-color: var(--card-bg-color);
+            padding: 2rem;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--card-shadow);
+        }
+
+        .exercise-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .exercise-item {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            background-color: var(--background-color); /* Lighter background for exercises */
+        }
+
+        .exercise-item h3 {
+            margin-top: 0;
+            color: var(--heading-color);
+            font-size: 1.3rem;
+        }
+
+        .exercise-item p {
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chapter-title {
+                font-size: 2rem;
+            }
+            .chapter-intro {
+                font-size: 1rem;
+            }
+            .chapter-section {
+                padding: 1.5rem;
+            }
+            .chapter-section h2 {
+                font-size: 1.8rem;
+            }
+            .chapter-section h3 {
+                font-size: 1.4rem;
+            }
+            .editor-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+            }
+            .editor-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../../index.html">The SQL Path</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../../index.html#chapters">Chapters</a></li>
+                    <li><a href="../../index.html#about">About</a></li>
+                    <li><a href="../../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="theme-toggle-container">
+                <button id="theme-toggle" aria-label="Toggle dark/light theme">
+                    <!-- Icon for theme toggle - will be set by JavaScript -->
+                    <span class="icon">💡</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="chapter-main">
+        <div class="container chapter-container">
+            <nav class="breadcrumbs">
+                <a href="../../index.html">Home</a> &gt; <a href="../../index.html#chapters">Chapters</a> &gt; <span>Chapter 4</span>
+            </nav>
+
+            <h1 class="chapter-title">Chapter 4: The Power of Summaries – `GROUP BY` and Aggregate Functions</h1>
+            <p class="chapter-intro">So far, you've learned to select and filter individual rows. But what if you want to understand trends, totals, or averages across groups of data? This is where aggregate functions and the `GROUP BY` clause become indispensable. They allow you to summarize your data, turning raw facts into meaningful insights.</p>
+
+            <section class="chapter-section">
+                <h2>4.1 Introduction to Aggregate Functions</h2>
+                <p>Aggregate functions perform calculations on a set of rows and return a single summary value. They are typically used with numeric data, but some, like `COUNT()`, can be used with any data type. Common aggregate functions include:</p>
+                <ul>
+                    <li>`COUNT()`: Returns the number of rows or non-NULL values.</li>
+                    <li>`SUM()`: Calculates the total sum of a numeric column.</li>
+                    <li>`AVG()`: Calculates the average of a numeric column.</li>
+                    <li>`MIN()`: Returns the minimum value in a column.</li>
+                    <li>`MAX()`: Returns the maximum value in a column.</li>
+                </ul>
+                <p>Let's start by finding the total number of customers in our database using `COUNT(*)`.</p>
+                <div class="code-block-container">
+                    <div id="editor-4-1" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-4-1">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-4-1">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Now, let's find the total `total_amount` of all orders and the average `price` of all products.</p>
+                <div class="code-block-container">
+                    <div id="editor-4-2" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-4-2">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-4-2">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Finally, find the most expensive and least expensive product prices.</p>
+                <div class="code-block-container">
+                    <div id="editor-4-3" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-4-3">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-4-3">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>4.2 The `GROUP BY` Clause: Summarizing Data by Categories</h2>
+                <p>While aggregate functions calculate summaries for the *entire* result set, the `GROUP BY` clause divides the rows into groups, and the aggregate function then calculates a summary for *each group*. This is incredibly powerful for categorical analysis.</p>
+                <p>The `GROUP BY` clause must appear after the `FROM` (and `WHERE`) clause. Any non-aggregated columns in your `SELECT` list *must* also be in your `GROUP BY` clause.</p>
+                <p>Let's count how many customers are from each `country`.</p>
+                <div class="code-block-container">
+                    <div id="editor-4-4" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-4-4">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-4-4">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Now, let's calculate the average `price` for products within each `category`.</p>
+                <div class="code-block-container">
+                    <div id="editor-4-5" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-4-5">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-4-5">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <h3>Grouping by Multiple Columns</h3>
+                <p>You can group by multiple columns to create more granular summaries. The database will create a unique group for each distinct combination of values in the `GROUP BY` columns.</p>
+                <p>Let's find the total `total_amount` for orders grouped by `customer_id` and `status`.</p>
+                <div class="code-block-container">
+                    <div id="editor-4-6" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-4-6">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-4-6">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="chapter-section">
+                <h2>4.3 Filtering Groups with `HAVING`</h2>
+                <p>The `WHERE` clause filters individual rows *before* aggregation. If you want to filter groups based on the *result* of an aggregate function, you must use the `HAVING` clause.</p>
+                <p>The `HAVING` clause always comes after `GROUP BY`.</p>
+                <p>Let's find countries that have more than 5 customers.</p>
+                <div class="code-block-container">
+                    <div id="editor-4-7" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-4-7">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-4-7">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+                <p>Now, list categories where the average product price is greater than $150.</p>
+                <div class="code-block-container">
+                    <div id="editor-4-8" class="code-editor"></div>
+                    <div class="editor-actions">
+                        <button class="btn btn-primary run-query-btn" data-editor-id="editor-4-8">Run Query</button>
+                    </div>
+                    <div class="query-results" id="results-4-8">
+                        <p>Results will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="exercise-section">
+                <h2>Chapter 4 Exercises</h2>
+                <p>Summarize and group your Databites data to answer these analytical questions.</p>
+
+                <div class="exercise-item" data-exercise-id="chapter-04-exercise-4-1">
+                    <h3>Exercise 4.1: Customer Order Counts</h3>
+                    <p>For each customer, determine the total number of orders they have placed. Display the `customer_id` and the `total_orders` count. Only include customers who have placed at least 2 orders.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-4-1" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-4-1">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-04-exercise-4-1">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-4-1">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-04-exercise-4-2">
+                    <h3>Exercise 4.2: Category Pricing Overview</h3>
+                    <p>Calculate the maximum, minimum, and average `price` for products in each `category`. Display the `category`, `max_price`, `min_price`, and `avg_price`. Order the results by `category` alphabetically.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-4-2" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-4-2">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-04-exercise-4-2">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-4-2">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercise-item" data-exercise-id="chapter-04-exercise-4-3">
+                    <h3>Exercise 4.3: High-Value Order Statuses</h3>
+                    <p>Find the `status` of orders where the total `SUM` of `total_amount` for that status is greater than $1000. Display the `status` and the `total_sales` for that status.</p>
+                    <div class="code-block-container">
+                        <div id="exercise-editor-4-3" class="code-editor"></div>
+                        <div class="editor-actions">
+                            <button class="btn btn-primary run-query-btn" data-editor-id="exercise-editor-4-3">Run Query</button>
+                            <button class="btn btn-secondary check-answer-btn" data-exercise-id="chapter-04-exercise-4-3">Check Answer</button>
+                        </div>
+                        <div class="query-results" id="exercise-results-4-3">
+                            <p>Results and feedback will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> The SQL Path. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global scripts: main.js handles theme toggle, etc. -->
+    <script type="module" src="../../assets/js/main.js"></script>
+
+    <!-- Chapter-specific scripts for SQL Editor and Database interaction -->
+    <script type="module">
+        import { loadMonacoEditor, initializeMonacoEditor, getEditorContent, setEditorContent } from '../../assets/js/code-editor.js';
+        import { initializeDatabase, executeSql } from '../../assets/js/sql-engine.js';
+        import { setExerciseCompleted, isExerciseCompleted } from '../../assets/js/progress-tracking.js';
+        import { getElementById, createElement, emptyElement } from '../../assets/js/utils.js';
+
+        // Initial SQL content for the demonstration editors
+        const initialQuery4_1 = `SELECT COUNT(*) FROM Customers;`;
+        const initialQuery4_2 = `SELECT SUM(total_amount) AS total_sales, AVG(price) AS average_product_price FROM Orders, Products;`;
+        const initialQuery4_3 = `SELECT MAX(price) AS max_product_price, MIN(price) AS min_product_price FROM Products;`;
+        const initialQuery4_4 = `SELECT country, COUNT(customer_id) AS num_customers FROM Customers GROUP BY country;`;
+        const initialQuery4_5 = `SELECT category, AVG(price) AS average_price FROM Products GROUP BY category;`;
+        const initialQuery4_6 = `SELECT customer_id, status, SUM(total_amount) AS total_spent FROM Orders GROUP BY customer_id, status;`;
+        const initialQuery4_7 = `SELECT country, COUNT(customer_id) AS num_customers FROM Customers GROUP BY country HAVING COUNT(customer_id) > 5;`;
+        const initialQuery4_8 = `SELECT category, AVG(price) AS avg_category_price FROM Products GROUP BY category HAVING AVG(price) > 150;`;
+
+
+        // Initial SQL content for exercises
+        const initialExercise4_1 = `SELECT customer_id, COUNT(order_id) AS total_orders FROM Orders GROUP BY customer_id HAVING total_orders >= 2;`;
+        const initialExercise4_2 = `SELECT category, MAX(price) AS max_price, MIN(price) AS min_price, AVG(price) AS avg_price FROM Products GROUP BY category ORDER BY category ASC;`;
+        const initialExercise4_3 = `SELECT status, SUM(total_amount) AS total_sales FROM Orders GROUP BY status HAVING total_sales > 1000;`;
+
+
+        // Keep track of editors
+        const editors = {};
+
+        /**
+         * Renders query results in a table format.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function renderResults(resultsContainer, columns, rows) {
+            emptyElement(resultsContainer); // Clear previous results
+
+            if (!columns || columns.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No columns returned.' }));
+                return;
+            }
+            if (!rows || rows.length === 0) {
+                resultsContainer.appendChild(createElement('p', { textContent: 'Query executed successfully. No rows returned.' }));
+                return;
+            }
+
+            const table = createElement('table');
+            const thead = createElement('thead');
+            const tbody = createElement('tbody');
+
+            // Create table header
+            const headerRow = createElement('tr');
+            columns.forEach(col => {
+                headerRow.appendChild(createElement('th', { textContent: col }));
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            rows.forEach(rowData => {
+                const row = createElement('tr');
+                rowData.forEach(cellData => {
+                    row.appendChild(createElement('td', { textContent: cellData === null ? 'NULL' : cellData.toString() }));
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            resultsContainer.appendChild(table);
+        }
+
+        /**
+         * Displays a message in the results container.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function displayMessage(resultsContainer, message, isError = false) {
+            emptyElement(resultsContainer);
+            const p = createElement('p', { textContent: message });
+            if (isError) {
+                p.style.color = 'var(--primary-color)';
+                p.style.fontWeight = 'bold';
+            }
+            resultsContainer.appendChild(p);
+        }
+
+        /**
+         * Handles the execution of a SQL query from an editor.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        async function handleRunQuery(editorId, resultsId) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+
+            if (!editor || !resultsContainer) {
+                console.error(`Editor (${editorId}) or results container (${resultsId}) not found.`);
+                return;
+            }
+
+            const query = editor.getValue();
+            if (!query.trim()) {
+                displayMessage(resultsContainer, 'Please enter a SQL query to execute.', true);
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Executing query...', false);
+
+            try {
+                const result = executeSql(query);
+
+                if (result.error) {
+                    displayMessage(resultsContainer, `Error: ${result.error}`, true);
+                } else if (result.isSelect) {
+                    renderResults(resultsContainer, result.columns, result.rows);
+                } else {
+                    displayMessage(resultsContainer, result.message || 'Command executed successfully.', false);
+                }
+            } catch (e) {
+                console.error('Unexpected error during query execution:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred: ${e.message}`, true);
+            }
+        }
+
+        /**
+         * Initializes an individual editor and sets up its run button.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorAndRunButton(editorId, initialContent, resultsId) {
+            const editorDiv = getElementById(editorId);
+            if (editorDiv) {
+                editors[editorId] = initializeMonacoEditor(editorId, initialContent, document.documentElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light');
+
+                const runButton = document.querySelector(`button.run-query-btn[data-editor-id="${editorId}"]`);
+                if (runButton) {
+                    runButton.addEventListener('click', () => handleRunQuery(editorId, resultsId));
+                }
+            }
+        }
+
+        /**
+         * Sets up the theme change listener for all editors.
+         * (Same as previous chapters, ensuring consistency)
+         */
+        function setupEditorThemeListener() {
+            const htmlElement = document.documentElement;
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                        const newTheme = htmlElement.getAttribute('data-theme') === 'dark' ? 'vs-dark' : 'vs-light';
+                        for (const editorId in editors) {
+                            if (editors[editorId]) {
+                                editors[editorId].updateOptions({ theme: newTheme });
+                            }
+                        }
+                    }
+                });
+            });
+            observer.observe(htmlElement, { attributes: true });
+        }
+
+        /**
+         * Compares two 2D arrays (results from SQL queries).
+         * This version is robust for GROUP BY results where row order might not be strictly defined
+         * but content must match, so it sorts rows before comparison.
+         * @param {Array<string>} userColumns User's query columns.
+         * @param {Array<Array<any>>} userRows User's query rows.
+         * @param {Array<string>} expectedColumns Expected query columns.
+         * @param {Array<Array<any>>} expectedRows Expected query rows.
+         * @returns {boolean} True if results match, false otherwise.
+         */
+        function compareQueryResults(userColumns, userRows, expectedColumns, expectedRows) {
+            // Check column count and names
+            if (userColumns.length !== expectedColumns.length) {
+                console.log("Column count mismatch.");
+                return false;
+            }
+            // Sort column names for comparison to be order-independent
+            const sortedUserCols = [...userColumns].sort();
+            const sortedExpectedCols = [...expectedColumns].sort();
+            if (JSON.stringify(sortedUserCols) !== JSON.stringify(sortedExpectedCols)) {
+                console.log("Column names mismatch or order different.");
+                return false;
+            }
+
+            // Check row count
+            if (userRows.length !== expectedRows.length) {
+                console.log(`Row count mismatch. Expected ${expectedRows.length}, got ${userRows.length}.`);
+                return false;
+            }
+
+            // For GROUP BY, the order of groups can sometimes vary depending on the database
+            // or specific query execution plan if no ORDER BY is specified.
+            // To make the comparison robust, we will stringify each row and then sort the array of row strings.
+            const serializeRow = (row) => JSON.stringify(row.map(cell => (cell === null ? 'NULL' : cell.toString())));
+            const sortedUserRowStrings = userRows.map(serializeRow).sort();
+            const sortedExpectedRowStrings = expectedRows.map(serializeRow).sort();
+
+            if (JSON.stringify(sortedUserRowStrings) !== JSON.stringify(sortedExpectedRowStrings)) {
+                console.log("Row data mismatch or order different (after internal sort).");
+                return false;
+            }
+
+            return true;
+        }
+
+
+        /**
+         * Handles the "Check Answer" functionality for exercises.
+         * This version provides basic validation against expected results.
+         * @param {string} exerciseId The unique ID of the exercise.
+         * @param {string} editorId The ID of the associated editor.
+         * @param {string} resultsId The ID of the associated results container.
+         * @param {string} expectedQuery The correct SQL query for validation.
+         * @param {boolean} [requiresSelect=true] If true, validates only SELECT queries.
+         */
+        async function handleCheckAnswer(exerciseId, editorId, resultsId, expectedQuery, requiresSelect = true) {
+            const editor = editors[editorId];
+            const resultsContainer = getElementById(resultsId);
+            const exerciseItemElement = getElementById(exerciseId);
+
+            if (!editor || !resultsContainer || !exerciseItemElement) {
+                console.error(`Elements for exercise check not found: Editor(${editorId}), Results(${resultsId}), Item(${exerciseId}).`);
+                return;
+            }
+
+            const userQuery = editor.getValue();
+            if (!userQuery.trim()) {
+                displayMessage(resultsContainer, 'Please write your query before checking the answer.', true);
+                setExerciseCompleted(exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+                return;
+            }
+
+            displayMessage(resultsContainer, 'Checking your answer...', false);
+
+            try {
+                const userResult = executeSql(userQuery);
+
+                if (userResult.error) {
+                    displayMessage(resultsContainer, `Your query has an error: ${userResult.error}`, true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                if (requiresSelect && !userResult.isSelect) {
+                    displayMessage(resultsContainer, 'Please provide a SELECT query to check your answer.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                const expectedResult = executeSql(expectedQuery);
+
+                if (expectedResult.error) {
+                    console.error('Error in expected query for exercise validation:', expectedResult.error);
+                    displayMessage(resultsContainer, 'An internal error occurred while validating the exercise. Please try again later.', true);
+                    setExerciseCompleted(exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)';
+                    return;
+                }
+
+                let isCorrect = false;
+                if (requiresSelect) {
+                    isCorrect = compareQueryResults(userResult.columns, userResult.rows, expectedResult.columns, expectedResult.rows);
+                } else {
+                    isCorrect = !userResult.error;
+                }
+
+                if (isCorrect) {
+                    displayMessage(resultsContainer, '🎉 Correct! Well done!', false);
+                    setExerciseCompleted('chapter-04', exerciseId, true); // Mark as completed for chapter 04
+                    exerciseItemElement.style.border = '2px solid var(--primary-color)'; // Visual feedback
+                } else {
+                    displayMessage(resultsContainer, '❌ Incorrect. Review your query and try again.', true);
+                    setExerciseCompleted('chapter-04', exerciseId, false);
+                    exerciseItemElement.style.border = '1px solid var(--border-color)'; // Reset border
+                }
+
+                renderResults(resultsContainer, userResult.columns, userResult.rows);
+
+            } catch (e) {
+                console.error('Error during exercise check:', e);
+                displayMessage(resultsContainer, `An unexpected error occurred during check: ${e.message}`, true);
+                setExerciseCompleted('chapter-04', exerciseId, false);
+                exerciseItemElement.style.border = '1px solid var(--border-color)';
+            }
+        }
+
+
+        // DOM Content Loaded Handler
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Chapter 4: DOM Content Loaded.');
+
+            // Initialize the database for this chapter
+            try {
+                await initializeDatabase(); // Loads databites.db or builds from scripts
+            } catch (e) {
+                console.error("Failed to initialize database for Chapter 4:", e);
+                displayMessage(getElementById('results-4-1'), `Failed to load database: ${e.message}. Interactive exercises might not work.`, true);
+                return; // Stop further initialization if DB fails
+            }
+
+            // Load Monaco Editor
+            try {
+                await loadMonacoEditor();
+            } catch (e) {
+                console.error("Failed to load Monaco Editor for Chapter 4:", e);
+                displayMessage(getElementById('results-4-1'), `Failed to load code editor: ${e.message}. Code interaction will not work.`, true);
+                return; // Stop further initialization if editor fails
+            }
+
+            // Set up demonstration editors
+            setupEditorAndRunButton('editor-4-1', initialQuery4_1, 'results-4-1');
+            setupEditorAndRunButton('editor-4-2', initialQuery4_2, 'results-4-2');
+            setupEditorAndRunButton('editor-4-3', initialQuery4_3, 'results-4-3');
+            setupEditorAndRunButton('editor-4-4', initialQuery4_4, 'results-4-4');
+            setupEditorAndRunButton('editor-4-5', initialQuery4_5, 'results-4-5');
+            setupEditorAndRunButton('editor-4-6', initialQuery4_6, 'results-4-6');
+            setupEditorAndRunButton('editor-4-7', initialQuery4_7, 'results-4-7');
+            setupEditorAndRunButton('editor-4-8', initialQuery4_8, 'results-4-8');
+
+
+            // Set up exercise editors and their check buttons
+            setupEditorAndRunButton('exercise-editor-4-1', initialExercise4_1, 'exercise-results-4-1');
+            const checkBtn4_1 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-04-exercise-4-1"]');
+            if (checkBtn4_1) {
+                checkBtn4_1.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-04-exercise-4-1',
+                    'exercise-editor-4-1',
+                    'exercise-results-4-1',
+                    `SELECT customer_id, COUNT(order_id) AS total_orders FROM Orders GROUP BY customer_id HAVING total_orders >= 2;`
+                ));
+                if (isExerciseCompleted('chapter-04', 'chapter-04-exercise-4-1')) {
+                    getElementById('chapter-04-exercise-4-1').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-4-2', initialExercise4_2, 'exercise-results-4-2');
+            const checkBtn4_2 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-04-exercise-4-2"]');
+            if (checkBtn4_2) {
+                checkBtn4_2.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-04-exercise-4-2',
+                    'exercise-editor-4-2',
+                    'exercise-results-4-2',
+                    `SELECT category, MAX(price) AS max_price, MIN(price) AS min_price, AVG(price) AS avg_price FROM Products GROUP BY category ORDER BY category ASC;`
+                ));
+                 if (isExerciseCompleted('chapter-04', 'chapter-04-exercise-4-2')) {
+                    getElementById('chapter-04-exercise-4-2').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorAndRunButton('exercise-editor-4-3', initialExercise4_3, 'exercise-results-4-3');
+            const checkBtn4_3 = document.querySelector('button.check-answer-btn[data-exercise-id="chapter-04-exercise-4-3"]');
+            if (checkBtn4_3) {
+                checkBtn4_3.addEventListener('click', () => handleCheckAnswer(
+                    'chapter-04-exercise-4-3',
+                    'exercise-editor-4-3',
+                    'exercise-results-4-3',
+                    `SELECT status, SUM(total_amount) AS total_sales FROM Orders GROUP BY status HAVING total_sales > 1000;`
+                ));
+                 if (isExerciseCompleted('chapter-04', 'chapter-04-exercise-4-3')) {
+                    getElementById('chapter-04-exercise-4-3').style.border = '2px solid var(--primary-color)';
+                }
+            }
+
+            setupEditorThemeListener();
+
+            // Mark chapter as visited/started for progress tracking
+            // This is a simple flag. More robust completion might depend on all exercises being correct.
+            // setChapterCompleted('chapter-04', true);
+        });
+
+        // Ensure editors resize when window resizes
+        window.addEventListener('resize', () => {
+            for (const editorId in editors) {
+                if (editors[editorId]) {
+                    editors[editorId].layout();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
